@@ -1,0 +1,81 @@
+/*****************************************
+*   General
+*****************************************/
+body {
+  margin-top:20px;
+  font-family: Osaka;
+  background-color: ghostwhite;
+  color: inherit;
+}
+
+h2, h3, h5 {
+  text-align: center;
+}
+
+h4 {
+  text-align:justify;
+}
+
+button {
+  padding:10px;
+}
+
+li {
+  text-align: left;
+}
+
+a {
+  text-align: center;
+  color: whitesmoke;
+  text-decoration: none;
+}
+
+#container {
+  max-width:80%;
+  margin: auto;
+}
+
+/*****************************************
+*   Happy Fun Ball
+*****************************************/
+#happy-fun-ball {
+  min-width: 20vmax;
+  height: 20vmax;
+  border-radius:100%;
+  background-color: #FF8E00;
+  text-align: left;
+  background-image: radial-gradient(circle, #ffcd8d, orange);
+  box-shadow: 4px 4px 8px orange, -4px -4px 8px orange, 4px -4px 8px orange, -4px 4px 8px orange;
+  text-align: center;
+  vertical-align: middle;
+}
+#happy-fun-ball p{
+  line-height: 20vmax;
+  color: rgba(255, 255, 255, 0.1);
+}
+#happy-fun-ball:hover{
+    background-image: radial-gradient(circle, orange, #ffcd8d);
+      box-shadow: 4px 4px 8px white, -4px -4px 8px white, 4px -4px 8px white, -4px 4px 8px white;
+}
+
+#happy-fun-ball:hover p {
+  color: rgba( 0, 0, 0, 0);
+}
+#special-container {
+  display:inline-block;
+}
+
+h1 {
+  display: inline-block;
+  vertical-align: center;
+  font-family: 'Marker Felt';
+  position: absolute;
+  left: 35vmax;
+  top: 25px;
+  font-size: 8vmax;
+  text-align: left;
+}
+
+.price {
+  color: orange;
+}
