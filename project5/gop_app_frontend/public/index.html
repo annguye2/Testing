@@ -1,22 +1,175 @@
 <!DOCTYPE html>
 <html ng-app='GopApp'>
-  <head>
-    <meta charset="utf-8">
-    <title> geospatial-online-project</title>
-    <link rel="stylesheet" href="style.css">
+<head >
+  <meta charset="utf-8"> <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title> Geosptial Online Tool</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/normalize.css">
 
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"> </script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
 
-    <script src = "app.js"></script>
-  </head>
-  <body ng-controller='UserController as ctrl'>
-   {{ctrl.createUserMsg}}
-   {{ctrl.createUserSuccessMsg}}
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+  <script src="https://js.arcgis.com/3.20/"></script>
+  <!-- <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src='map.js'></script>
+  <script src="app.js"> </script>
+</head>
+<body ng-controller='UserController as ctrl'>
+ <!-- header -->
+  <header>
+    <h1>Geospatial Online Projects</h1>
+    <div class="container"   id='container-1' >
+      <div class="row" id='nav'>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar' class="navbar-brand" href="http://www.arcgis.com/home/index.html">ESRI</a>
+        </nav>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar'class="navbar-brand"  >|</a>
+        </nav>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar'class="navbar-brand" href="/">HOME</a>
+        </nav>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar'class="navbar-brand"  >|</a>
+        </nav>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar'class="navbar-brand" data-toggle="modal" href="#logInModal">LOGIN</a>
+        </nav>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar'class="navbar-brand"  >|</a>
+        </nav>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar'class="navbar-brand" data-toggle="modal" href="#registerModal">REGISTER</a>
+        </nav>
+      </div>
 
-   {{ctrl.failedLoginMsg}}
-   {{ctrl.sucessfulLoginMsg}}
-   <button ng-click='ctrl.displayWelcome()' name="button"> testing </button>
-  </body>
+    </div>
+  </header>
+
+  <div class="container" ng-controller='EsriController as esri'>
+           <!-- map section -->
+            <div class="row" id='map-section'>
+              <div  id="map"> </div>
+            </div>
+
+            <div class="row" id='map-tool'>
+
+                  <div class="col-sm-3" id="search"> </div>
+                  <div class="col-sm-2" id="base-map">
+                    <select id='basemapSelector'  ng-model="esri.selectedBasemapGallery" >
+                      <option class="selectpicker"value="">---change base map--</option> <!-- not selected / blank option -->
+                      <option ng-repeat="basemap in esri.basemapGallery | orderBy: 'label' " value="{{basemap.value}}">{{basemap.label}}</option>
+                    </select>
+                  </div>
+                  <div class="col-sm-7" id="feature-layer">
+                    <select  id='featureServiceSelector'  ng-model="esri.featureServices">
+                      <option value="">---------------------Please select------------------</option>
+                      <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option>
+                    </select>
+                      <button ng-click='ctrl.getBasemap()' id='addLayer' class='button' name="button" > Add To Map</button>
+                      <button class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
+                  </div>
+            </div>
+           <!-- tool container -->
+          <!-- <div class="row" id='tool-container' >
+             <div class="col-sm-2" id=''>user-col</div>
+             <div class="col-sm-2" id=''>app-col  1</div>
+             <div class="col-sm-2" id=''>app-col 2</div>
+             <div class="col-sm-2" id=''>app-col 3</div>
+         </div> -->
+                <!-- user container  -->
+          <div class="row" id='user-container'>
+           <div class="col-sm-8" id='user-col'>
+             <div class="row">
+               <label for="">Login as: </label>
+             </div>
+                 <div class="row">
+                   <select  id='user-projects' >
+                     <option value="">---------------------your projects------------------</option>
+                     <!-- <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option> -->
+                   </select>
+                   <button class='button'type="button" name="button">Load To Map</button>
+                   <button class='button'type="button" name="button">Edit</button>
+                 </div>
+
+           </div>
+           <div class="col-sm-4" id='app-col'>app-col
+
+             <div class="row">
+               <select  id='shared-projects' >
+                 <option value="">---------------------shared projects------------------</option>
+                 <!-- <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option> -->
+               </select>
+               <button class='button'type="button" name="button">Load To Map</button>
+               <button class='button'type="button" name="button">Create Project</button>
+             </div>
+           </div>
+         </div>
+</div><!-- End of page (bootstrap) container  -->
+
+ <!-- modal login section -->
+ <div class="modal fade" id="logInModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Log In</h4>
+        </div>
+        <div class="row">
+          <div class="modal-body">
+            <label for="username">User name</label><input type="text" name="username" value="" placeholder="username">
+            <label for="password">Password</label><input type="text" name="password" value="" placeholder="password">
+          </div>
+        </div>
+        <div class="modal-footer">
+          {{ctrl.loginError}}
+          <button type="button" class="btn btn-default" data-dismiss="modal">Login</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- modal register section -->
+<div class="modal fade" id="registerModal" role="dialog">
+   <div class="modal-dialog">
+     <!-- Modal content-->
+     <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal">&times;</button>
+         <h4 class="modal-title">Register Form</h4>
+       </div>
+       <div class="modal-body">
+         <p>Some text in the modal.</p>
+         <input type="text" name="" value="" placeholder="Name"><br>
+         <input type="text" name="" value="" placeholder="email"><br>
+         <input type="text" name="" value="" placeholder="username"><br>
+         <input type="text" name="" value="" placeholder="password"><br>
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Register</button>
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+       </div>
+     </div>
+   </div>
+ </div>
+
+
+<!-- footer -->
+<footer id='footer'>
+	 <div class="container" id="nav">
+		<div id="navigation">
+			<ul>
+				<li ><a href="/">Home</a></li>
+				<li><a href="#">About Us</a></li>
+				<li><a href="#">Support</a></li>
+			</ul>
+		</div><!-- navigation -->
+	</footer>
+</body>
 </html>

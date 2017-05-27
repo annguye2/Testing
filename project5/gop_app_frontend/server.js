@@ -10,6 +10,6 @@ const port = process.env.PORT || 8000
 
 app.listen(port,() =>{
   console.log('=================================================');
-  console.log('Humanity App frontend server runs on this port:', port);
+  console.log('Geospatial Online App frontend server runs on this port:', port);
   console.log('=================================================');
 });
