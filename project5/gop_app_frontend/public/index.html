@@ -145,11 +145,57 @@
          <h4 class="modal-title">Register Form</h4>
        </div>
        <div class="modal-body">
-         <p>Some text in the modal.</p>
-         <input type="text" name="" value="" placeholder="Name"><br>
-         <input type="text" name="" value="" placeholder="email"><br>
-         <input type="text" name="" value="" placeholder="username"><br>
-         <input type="text" name="" value="" placeholder="password"><br>
+         <div class="container" id='register'>
+           <div class="row">
+
+                  Fill in the information below
+
+           </div>
+           <div class="row">
+                (<span id='required'>red</span> = required)
+           </div>
+
+           <div class="row">
+             <div class="col-sm-5" id=''>
+               <label for="name"> <span id='required'>Name:</span></label>
+             </div>
+             <div class="col-sm-7" id=''>
+               <input type="text"><br>
+             </div>
+           </div>
+           <div class="row">
+             <div class="col-sm-5" id=''>
+               <label for="email">Email:</label>
+             </div>
+             <div class="col-sm-7" id=''>
+                <input type="text"><br>
+             </div>
+           </div>
+           <div class="row">
+             <div class="col-sm-5" id=''>
+               <label for="username"><span id='required'>username:</span></label>
+             </div>
+             <div class="col-sm-7" id=''>
+                <input type="text"><br>
+             </div>
+           </div>
+           <div class="row">
+             <div class="col-sm-5" id=''>
+               <label for="password"><span id='required'>password:</span></label>
+             </div>
+             <div class="col-sm-7" id=''>
+                 <input type="text" name="">
+             </div>
+           </div>
+           <div class="row">
+             <div class="col-sm-5" id=''>
+             </div>
+             <div class="col-sm-7" id=''>
+                 {{ctrl.registerErrorMsg}}
+             </div>
+           </div>
+         </div>
+
        </div>
        <div class="modal-footer">
          <button type="button" class="btn btn-default" data-dismiss="modal">Register</button>

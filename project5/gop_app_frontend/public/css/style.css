@@ -94,6 +94,9 @@ h4, h3{
   justify-content: space-between;
 }
 
-.container{
-
+#required{
+  color: #D90000;
+}
+#register{
+width: 35%;
 }
