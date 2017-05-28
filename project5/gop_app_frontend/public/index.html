@@ -45,6 +45,12 @@
         <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
           <a id='navbar'class="navbar-brand" data-toggle="modal" href="#registerModal">REGISTER</a>
         </nav>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar'class="navbar-brand"  >|</a>
+        </nav>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+          <a id='navbar'class="navbar-brand"  href="/" ng-click='ctrl.logout()'>LOG OUT</a>
+        </nav>
       </div>
 
     </div>
@@ -80,7 +86,7 @@
     <div class="col-sm-8" id='user-col'>
       <div class="row"> <br>
         <div class="col-sm-6">
-          <label for="">Login as: </label>
+          <label for="">Login as: {{ctrl.currentUser.name}}</label>
         </div>
         <div class="col-sm-6">
           <a data-toggle="modal" href="#editModal">Edit Profile</a>
@@ -219,7 +225,7 @@
      <!-- End of user section -->
 
      <!-- modal login section -->
-     <div class="modal fade" id="logInModal" role="dialog">
+     <div class="modal fade" id="logInModal" role="dialog" >
         <div class="modal-dialog">
           <!-- Modal content-->
           <div class="modal-content">
@@ -231,14 +237,15 @@
               <div class="modal-body">
                 <label for="username">User name:</label><input id='login' ng-model='userPass.username'type="text" name="username" value="" placeholder="username">
                 <label for="password">Password:</label><input id='login' ng-model='userPass.password'type="password" name="password" value="" placeholder="password">
-                <button type="button" class="btn btn-default"  ng-click='ctrl.login(userPass)'>Login</button>
+                <button type="button" class="btn btn-default"  ng-click='ctrl.login(userPass)'  >Login</button>
                 <span id='required'>{{ctrl.failedLoginMsg}}</span>
                 <span id='login-success'>{{ctrl.sucessfulLoginMsg}}</span>
               </div>
             </div>
             <!-- data-dismiss="modal" -->
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" id='login-close-button' class="btn btn-default" data-dismiss="modal">Close</button>
+
             </div>
           </div>
         </div>
@@ -299,6 +306,8 @@
                  </div>
                  <div class="col-sm-7" id=''>
                      <span id='required'>{{ctrl.registerErrorMsg}}</span>
+                     <span id='login-success'>{{ctrl.createUserSuccessMsg}}</span>
+
 
                  </div>
                </div>
@@ -367,14 +376,14 @@
                  <div class="col-sm-5" id=''>
                  </div>
                  <div class="col-sm-7" id=''>
-                   {{ctrl.registerErrorMsg}}
+                   {{ctrl.updateErrorMsg}}
                  </div>
                </div>
              </div>
 
            </div>
            <div class="modal-footer">
-             <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+             <button ng-click='ctrl.updateProfile(updateUser)' type="button" class="btn btn-default" >Submit</button>
              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
            </div>
          </div>

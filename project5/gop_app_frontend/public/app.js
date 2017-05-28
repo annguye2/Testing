@@ -1,4 +1,5 @@
 
+
 // Domains variables
 const app_domain = 'http://localhost:8000/';
 const api_domain = 'http://localhost:3000/';
@@ -6,11 +7,20 @@ const api_domain = 'http://localhost:3000/';
 //==================Angular app controller ================
 const app = angular.module('GopApp', []);
 
-app.controller('UserController', ['$http', function($http){
+app.controller('UserController', ['$http', function($http,$window){
+  // local variable;
+    // this.showUserLogin    = false;
+    // this.showUserRegister = false;
+    // this.showUserUpdate   = false;
+    this.currentUser = {};
 
+  //********************check localStorage**************
+     if(localStorage.getItem('currentUser')!= undefined){
+       this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
+     }
   //******************** Create User**************
   this.createUser = function(registerUser){
-    console.log('registerUser username is missing :', registerUser.username);
+    this.registerErrorMsg = '';
     if((registerUser.name == '') ||(registerUser.name == undefined)){
       this.registerErrorMsg = "User's name is missing";
       // console.log('missing name ; ', this.registerErrorMsg);
@@ -24,7 +34,10 @@ app.controller('UserController', ['$http', function($http){
       // console.log('missing password ; ', this.registerErrorMsg);
 
     }else{
-      console.log('Creating new User ; ', this.registerErrorMsg);
+       console.log('register User info ; ', registerUser);
+       var userPass ={};
+       userPass.username = registerUser.username;
+       userPass.password = registerUser.password;
       $http({
         method: "POST",
         url   : api_domain + "users",
@@ -35,24 +48,26 @@ app.controller('UserController', ['$http', function($http){
           password: registerUser.password
         }
       }).then(response => {
-        console.log(response);
-        if(response.data.message){
-          this.createUserMsg = response.data.message //msg set from API
-          console.log(this.createUserMsg);
+        console.log("create sucess");
+        if(response.data.status!=204){
+          this.createUserSuccessMsg = "Create User Success"
+          this.login(userPass);
+          this.showLogin != this.showLogin;
         }
         else {
-          this.createUserSuccessMsg = "Create User Success"
-          console.log(this.createUserSuccessMsg);
+            this.registerErrorMsg = response.data.message //msg set from API
         }
       })
     }
-    registerUser = {};
+    registerUser = '';
 
   };// end of createUser
 
   //******************** User Login**************
 
-  this.login = function(userPass){
+
+  this.login = (userPass) => {
+    console.log('log in from register  userPass:', userPass );
     this.sucessfulLoginMsg ='';
     this.failedLoginMsg    ='';
     if (!userPass) {
@@ -66,28 +81,90 @@ app.controller('UserController', ['$http', function($http){
           password: userPass.password
         }
       }).then(response =>{
-        console.log(response);
+        // console.log("response from log in ", response);
         if(response.data.status == 200){
-          this.sucessfulLoginMsg = response.data.message
-          console.log("success login: ", this.sucessfulLoginMsg);
+          console.log('login success');
+          this.sucessfulLoginMsg = response.data.message;
+          this.projects = response.data.projects;
+          this.setLocalStorage(response.data); //store createUser information to localStorage
+          setTimeout(function() {document.getElementById('login-close-button').click()}, 0);
         }else {
           this.failedLoginMsg = response.data.message + "! wrong username or password";
           console.log("failed login: ", this.failedLoginMsg);
         }
       })
     }
-    userPass = {};
+    userPass.username='';
+    userPass.password='';
   };
 
-  //******************** User logout**************
+  //*******************set time out *******************
+
+ //******************** get Current User Data ***********
+ // this.loadProfile = function(){
+ //   console.log('loading user profile by id: ', localStorage.getItem('userId'));
+ //   $http({ // Makes HTTP request to server
+ //     method: 'GET',
+ //     url: api_domain + 'user/' + localStorage.getItem('userId') + '/projects',
+ //     headers: {
+ //       Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+ //     }
+ //   }).then(response => {
+ //     if(response.data.status == 401) {
+ //       this.error = "Unauthorized";
+ //     } else {
+ //       console.log("current user info: ", response.data);
+ //     }
+ //   });
+ // }
+//********************* Update Profile *************
+this.updateProfile = function(updateUser){
+
+  if ((updateUser.name == "" || updateUser.name == undefined) ||
+  (updateUser.password == "" || updateUser.password == undefined))
+  {
+    console.log(" invalid input ");
+    this.updateErrorMsg = "missing username/password";
+  }
+  else{
+    console.log('alow to update ');
+    // $http({ // Makes HTTP request to server
+    //   method: 'PUT',
+    //   url: api_domain + '/users/' + localStorage.getItem('userId'),
+    //   headers: {
+    //     Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token'))
+    //   },
+    //   data: {
+    //     name:      this.playerProfile.name,
+    //     password:  this.playerProfile.password,
+    //     email:     this.playerProfile.email,
+    //   }
+    // }).then(function(response){
+    //   console.log("user response", response);
+    //   window.location.href="/"
+    // })
+  }
+}; //end of update profile
+ //******************** Set Local Storage ***********
+ this.setLocalStorage = function(data) {
+  //  console.log('set local storage data: ', data);
+   if(data){
+     // Put the object into storage
+     localStorage.setItem('currentUser', JSON.stringify(data));
+     this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
+
+   }
+ }
+  //******************** User logout********************
   this.logout = function(){
     console.log('logout');
-    //$localStorage.$reset();
-    window.location.href='/';
-  };
+    localStorage.clear();
+    };
 }]); // end of user controller
 
 
+
+//=======================================================ESRI controller
 app.controller('EsriController',['$http', function($http){
    this.greetingMsg = "Hello from ESRI controller "
   // build basemaps
@@ -107,7 +184,7 @@ app.controller('EsriController',['$http', function($http){
       url: api_domain + '/features'
     }).then(function(result){
       this.featureServices = result.data;
-      console.log(this.featureServices);
+      // console.log(this.featureServices);
     }.bind(this));
   };
 
