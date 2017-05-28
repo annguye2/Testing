@@ -108,8 +108,21 @@ width: 35%;
 }
 #input{
   height: 2em;
-  width: 90%;
+  width: 95%;
 }
 #textarea{
-  width: 90%;
+  width: 95%;
+  margin-top: 1%;
+}
+#test{
+  display: flex;
+  justify-content: flex-end;
+
+}
+
+.form-group{
+ margin-bottom: 4px;
+}
+#login-success{
+  color: lightblue;
 }

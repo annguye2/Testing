@@ -9,55 +9,74 @@ const app = angular.module('GopApp', []);
 app.controller('UserController', ['$http', function($http){
 
   //******************** Create User**************
-  this.createUser = function(){
-    console.log('Creating new User ');
-    this.username = "szzxz";
-    this.password = "pass123";
-    this.email    = "vvemail@gmail.com";
-    this.name     = "Full Name";
-    $http({
-      method: "POST",
-      url   : api_domain + "users",
-      data:{
-        name    : this.name,
-        username: this.username,
-        email   : this.email,
-        password: this.password
-      }
-    }).then(response => {
-      console.log(response);
-      if(response.data.message){
-        this.createUserMsg = response.data.message //msg set from API
-        console.log(this.createUserMsg);
-      }
-      else {
-        this.createUserSuccessMsg = "Create User Success"
-        console.log(this.createUserSuccessMsg);
-      }
-    })
+  this.createUser = function(registerUser){
+    console.log('registerUser username is missing :', registerUser.username);
+    if((registerUser.name == '') ||(registerUser.name == undefined)){
+      this.registerErrorMsg = "User's name is missing";
+      // console.log('missing name ; ', this.registerErrorMsg);
+    }
+    else if ((registerUser.username == '') || (registerUser.username == undefined)){
+      this.registerErrorMsg = "username is missing";
+      // console.log('mising username ; ', this.registerErrorMsg);
+    }
+    else if((registerUser.password == '') || (registerUser.password == undefined)){
+      this.registerErrorMsg = "password is missing";
+      // console.log('missing password ; ', this.registerErrorMsg);
+
+    }else{
+      console.log('Creating new User ; ', this.registerErrorMsg);
+      $http({
+        method: "POST",
+        url   : api_domain + "users",
+        data:{
+          name    : registerUser.name,
+          username: registerUser.username,
+          email   : registerUser.email,
+          password: registerUser.password
+        }
+      }).then(response => {
+        console.log(response);
+        if(response.data.message){
+          this.createUserMsg = response.data.message //msg set from API
+          console.log(this.createUserMsg);
+        }
+        else {
+          this.createUserSuccessMsg = "Create User Success"
+          console.log(this.createUserSuccessMsg);
+        }
+      })
+    }
+    registerUser = {};
 
   };// end of createUser
 
   //******************** User Login**************
 
-  this.login = function(){
-    this.username = "xx";
-    this.password = "pass123";
-    $http({
-      method: "POST",
-      url   : api_domain + "users/login",
-      data:{
-        username: this.username,
-        password: this.password
-      }
-    }).then(response =>{
-      console.log(response);
-      if(response.data.status == 200){
-        this.sucessfulLoginMsg = response.data.message
-      }else {
-        this.failedLoginMsg = response.data.message
-      }
-    })
+  this.login = function(userPass){
+    this.sucessfulLoginMsg ='';
+    this.failedLoginMsg    ='';
+    if (!userPass) {
+      this.failedLoginMsg = "Missing username/password";
+    }else {
+      $http({
+        method: "POST",
+        url   : api_domain + "users/login",
+        data:{
+          username: userPass.username,
+          password: userPass.password
+        }
+      }).then(response =>{
+        console.log(response);
+        if(response.data.status == 200){
+          this.sucessfulLoginMsg = response.data.message
+          console.log("success login: ", this.sucessfulLoginMsg);
+        }else {
+          this.failedLoginMsg = response.data.message + "! wrong username or password";
+          console.log("failed login: ", this.failedLoginMsg);
+        }
+      })
+    }
+    userPass = {};
   };
 
   //******************** User logout**************

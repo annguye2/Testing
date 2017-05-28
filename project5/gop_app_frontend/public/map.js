@@ -66,29 +66,35 @@ function(
 
  //******************* add FeatureLayer ****************
  var addFeatureLayer = function (url){
-   console.log('add layer: ');
-   var tempFeatureLayer = new FeatureLayer(url);
-   var template = new InfoTemplate();
-   tempFeatureLayer.on("load", function () {
-     template.setTitle("<b>" + tempFeatureLayer.name + "</b>");
-   });
-   var featureLayer = new FeatureLayer(url,{
-     mode: FeatureLayer.MODE_ONDEMAND,
-     infoTemplate: template,
-     outFields: ['*'],
-     opacity: 1,
-     visible: true
-   });
-   map.addLayer(featureLayer);  // add layer
-   map.refresh;
-   currentLayer = featureLayer;
+   if(url) {
+     console.log('add layer: ');
+     var tempFeatureLayer = new FeatureLayer(url);
+     var template = new InfoTemplate();
+     tempFeatureLayer.on("load", function () {
+       template.setTitle("<b>" + tempFeatureLayer.name + "</b>");
+     });
+     var featureLayer = new FeatureLayer(url,{
+       mode: FeatureLayer.MODE_ONDEMAND,
+       infoTemplate: template,
+       outFields: ['*'],
+       opacity: 1,
+       visible: true
+     });
+     map.addLayer(featureLayer);  // add layer
+     map.refresh;
+     currentLayer = featureLayer;
+   }
+   else {  console.log("There's no url");}
 
  }
   //******************* remove FeatureLayer ****************
  var removeLayer = function(){
-   console.log('remove current layer: ', map);
-    map.removeLayer(currentLayer);
-    map.refresh;
+   if(currentLayer){
+     console.log('remove current layer: ', map);
+      map.removeLayer(currentLayer);
+      map.refresh;
+   }else{console.log('no layer to remove');}
+
  }
   //************************ Read data**************************************
   //
