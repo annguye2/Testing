@@ -51,65 +51,167 @@
   </header>
 
   <div class="container" ng-controller='EsriController as esri'>
-           <!-- map section -->
-            <div class="row" id='map-section'>
-              <div  id="map"> </div>
+    <!-- map section -->
+    <div class="row" id='map-section'>
+      <div  id="map"> </div>
+    </div>
+    <div class="row" id='map-tool'>
+      <div class="col-sm-3" id="search"> </div>
+      <div class="col-sm-2" id="base-map">
+        <select id='basemapSelector'  ng-model="esri.selectedBasemapGallery" class="form-control">
+          <option class="selectpicker"value="">---change base map--</option> <!-- not selected / blank option -->
+          <option ng-repeat="basemap in esri.basemapGallery | orderBy: 'label' " value="{{basemap.value}}">{{basemap.label}}</option>
+        </select>
+      </div>
+      <div class="col-sm-7" id="feature-layer">
+        <select  id='featureServiceSelector'  ng-model="esri.featureServices" class="form-control">
+          <option value="">---------------------Please select------------------</option>
+          <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option>
+        </select>
+        <button ng-click='ctrl.getBasemap()' id='addLayer' class='button' name="button" > Add To Map</button>
+        <button class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
+      </div>
+    </div>
+ <br><br>
+  <!-- user SECTION  -->
+  <div class="row" id='user-container'>
+
+    <!-- user COLUMN -->
+    <div class="col-sm-8" id='user-col'>
+      <div class="row"> <br>
+        <div class="col-sm-6">
+          <label for="">Login as: </label>
+        </div>
+        <div class="col-sm-6">
+          <a data-toggle="modal" href="#editModal">Edit Profile</a>
+        </div> <br><br>
+      </div>
+      <div class="row">
+        <!-- <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option> -->
+        <div class="form-group">
+          <div class="col-sm-8">
+            <select class="form-control" id='user-projects'>
+                <option value="">---------------------your projects------------------</option>
+            </select>
+          </div>
+
+          <div class="col-sm-4">
+            <button class='button'type="button" name="button">Load To Map</button>
+            <button class='button'type="button" name="button">Edit</button>
+          </div>
+        </div>
+        <!-- <button class='button'type="button" name="button">Load To Map</button>
+        <button class='button'type="button" name="button">Edit</button> -->
+      </div><br>
+
+      <div class="row">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="Name:">Name:</label>
+            <div class="col-sm-10">
+              <input type="text" id='input' class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="catergory">Category:</label>
+            <div class="col-sm-10">
+              <input type="text" id='input' class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="comment">Comment:</label>
+            <div class="col-sm-10">
+            <textarea class="form-control" rows="2" id="textarea"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="descritption">Description:</label>
+            <div class="col-sm-10">
+            <textarea class="form-control" rows="2" id="textarea"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="descritption"> </label>
+            <div class="col-sm-10">
+              <label class="checkbox-inline"> <input type="checkbox" value="share">Share</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="button">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      </div>
+      <!-- end user section column -->
+
+
+      <!-- app section (COLUM) -->
+      <div class="col-sm-4" id='app-col'>app-col
+        <div class="row">
+          <div class="form-group">
+            <div class="col-sm-8">
+              <select class="form-control" id='user-projects'>
+                  <option value="">---------------------your projects------------------</option>
+              </select>
             </div>
 
-            <div class="row" id='map-tool'>
-
-                  <div class="col-sm-3" id="search"> </div>
-                  <div class="col-sm-2" id="base-map">
-                    <select id='basemapSelector'  ng-model="esri.selectedBasemapGallery" >
-                      <option class="selectpicker"value="">---change base map--</option> <!-- not selected / blank option -->
-                      <option ng-repeat="basemap in esri.basemapGallery | orderBy: 'label' " value="{{basemap.value}}">{{basemap.label}}</option>
-                    </select>
-                  </div>
-                  <div class="col-sm-7" id="feature-layer">
-                    <select  id='featureServiceSelector'  ng-model="esri.featureServices">
-                      <option value="">---------------------Please select------------------</option>
-                      <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option>
-                    </select>
-                      <button ng-click='ctrl.getBasemap()' id='addLayer' class='button' name="button" > Add To Map</button>
-                      <button class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
-                  </div>
+            <div class="col-sm-4">
+              <button class='button'type="button" name="button">Load </button>
+              <button class='button'type="button" name="button">Create Project</button>
             </div>
-           <!-- tool container -->
-          <!-- <div class="row" id='tool-container' >
-             <div class="col-sm-2" id=''>user-col</div>
-             <div class="col-sm-2" id=''>app-col  1</div>
-             <div class="col-sm-2" id=''>app-col 2</div>
-             <div class="col-sm-2" id=''>app-col 3</div>
-         </div> -->
-                <!-- user container  -->
-          <div class="row" id='user-container'>
-           <div class="col-sm-8" id='user-col'>
-             <div class="row">
-               <label for="">Login as: </label>
-             </div>
-                 <div class="row">
-                   <select  id='user-projects' >
-                     <option value="">---------------------your projects------------------</option>
-                     <!-- <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option> -->
-                   </select>
-                   <button class='button'type="button" name="button">Load To Map</button>
-                   <button class='button'type="button" name="button">Edit</button>
-                 </div>
+          </div>
+        </div>
+        <div class="row">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="Name:">Name:</label>
+              <div class="col-sm-10">
+                <input type="text" id='input' class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="catergory">Category:</label>
+              <div class="col-sm-10">
+                <input type="text" id='input' class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="comment">Comment:</label>
+              <div class="col-sm-10">
+              <textarea class="form-control" rows="2" id="textarea"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="descritption">Description:</label>
+              <div class="col-sm-10">
+              <textarea class="form-control" rows="2" id="textarea"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="descritption"> </label>
+              <div class="col-sm-10">
+                <label class="checkbox-inline"> <input type="checkbox" value="share">Share</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="button">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+     <!-- End of app Colum  -->
 
-           </div>
-           <div class="col-sm-4" id='app-col'>app-col
+    </div>
+     <!-- End of user section -->
 
-             <div class="row">
-               <select  id='shared-projects' >
-                 <option value="">---------------------shared projects------------------</option>
-                 <!-- <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option> -->
-               </select>
-               <button class='button'type="button" name="button">Load To Map</button>
-               <button class='button'type="button" name="button">Create Project</button>
-             </div>
-           </div>
-         </div>
-</div><!-- End of page (bootstrap) container  -->
+
+
+  </div><!-- End of page (bootstrap) container  -->
 
  <!-- modal login section -->
  <div class="modal fade" id="logInModal" role="dialog">
@@ -147,9 +249,7 @@
        <div class="modal-body">
          <div class="container" id='register'>
            <div class="row">
-
                   Fill in the information below
-
            </div>
            <div class="row">
                 (<span id='required'>red</span> = required)
@@ -205,6 +305,73 @@
    </div>
  </div>
 
+ <!-- modal user edit section -->
+ <div class="modal fade" id="editModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Edit profile</h4>
+        </div>
+        <div class="modal-body">
+          <div class="container" id='register'>
+            <div class="row">
+                   Fill in the information below
+            </div>
+            <div class="row">
+                 (<span id='required'>red</span> = required)
+            </div>
+
+            <div class="row">
+              <div class="col-sm-5" id=''>
+                <label for="name">Name:</label>
+              </div>
+              <div class="col-sm-7" id=''>
+                <input readonly=""type="text"><br>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-5" id=''>
+                <label for="email">Email:</label>
+              </div>
+              <div class="col-sm-7" id=''>
+                 <input type="text"><br>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-5" id=''>
+                <label for="username">username:</label>
+              </div>
+              <div class="col-sm-7" id=''>
+                 <input readonly=""type="text"><br>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-5" id=''>
+                <label for="password"><span id='required'>password:</span></label>
+              </div>
+              <div class="col-sm-7" id=''>
+                  <input type="text" name="">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-5" id=''>
+              </div>
+              <div class="col-sm-7" id=''>
+                  {{ctrl.registerErrorMsg}}
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Submit</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <!-- footer -->
 <footer id='footer'>
