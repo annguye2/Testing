@@ -10,6 +10,7 @@ const app = angular.module('GopApp', []);
 app.controller('UserController', ['$http', function($http,$window){
   // local variable;
   this.disableUserSection = true;
+  this.disableEditSection = true;
   this.currentUser = {};
   this.displayUser = new Object;
 
@@ -17,8 +18,10 @@ app.controller('UserController', ['$http', function($http,$window){
   if(localStorage.getItem('currentUser')!= undefined){
     this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
     this.displayUser = this.currentUser;
+    this.disableUserSection = false;
+    this.disableEditSection = false;
   }
-  //******************** Create User**************
+  //******************** Create User*************
   this.createUser = (registerUser) => {
     this.registerErrorMsg = '';
     if((registerUser.name == '') ||(registerUser.name == undefined)){
@@ -87,6 +90,7 @@ app.controller('UserController', ['$http', function($http,$window){
           this.setLocalStorage(response.data); //store createUser information to localStorage
           setTimeout(function() {document.getElementById('login-close-button').click()}, 0);
           this.disableUserSection = false;
+          localStorage.setIt('disableUserSection',this.disableUserSection);
         }else {
           this.failedLoginMsg = response.data.message + "! wrong username or password";
           console.log("failed login: ", this.failedLoginMsg);
@@ -97,7 +101,7 @@ app.controller('UserController', ['$http', function($http,$window){
     userPass.password='';
   };
 
-  //********************* Update Profile *************
+  //********************* Update Profile **********
   this.updateProfile = () => {
     console.log('update user profile:');
     this.updateErrorMsg = '';
@@ -142,7 +146,7 @@ app.controller('UserController', ['$http', function($http,$window){
       })
     }
   }; //end of update profile
-  //******************** Set Local Storage ***********
+  //******************** Set Local Storage ********
   this.setLocalStorage = (data) => {
     if(data){
       // Put the object into storage
@@ -151,18 +155,23 @@ app.controller('UserController', ['$http', function($http,$window){
       this.displayUser = this.currentUser;
     }
   }
-  //******************** User logout********************
+  //******************** User logout****************
   this.logout = () => {
     console.log('logout');
     localStorage.clear();
   };
 
-
+  //******************** Enable Edit Section********
+  this.enableEditSection = () =>{
+    this.disableEditSection = false;
+    //localStorage.setIt('disableEditSection',this.disableEditSection )
+  }
 
 }]); // end of user controller
 
-
-
+//***********************************************************
+            //  ESRI Controller
+//***********************************************************
 
 //=======================================================ESRI controller
 app.controller('EsriController',['$http', function($http){
@@ -184,8 +193,11 @@ app.controller('EsriController',['$http', function($http){
         method: 'GET',
         url: api_domain + '/features'
       }).then(result =>{
+        // console.log('seed data : ', result.data);
         this.featureServices = result.data;
+        localStorage.setItem('featureServices', JSON.stringify(result.data));
       });
+      console.log('this.featureServices: ', this.featureServices);
     };
 
     //************ loading feature URL ****************************
@@ -207,24 +219,40 @@ app.controller('EsriController',['$http', function($http){
     }
     //************ Create Project*********************************
     this.createProject = (createData) => {
+        console.log('get create data ', createData);
+        // 1. create new feature service data  then add to database and get the ID on response back
+        feature_id = 0;
+        var featureService ={};
+        featureService.title = createData.name + " added new new new";
+        featureService.url = createData.feature_url + 'new new';
+        featureService.data_type = "FeatureServer";
+        $http({
+          method: 'POST',
+          url: api_domain + '/features',
+          data: featureService
+        }).then(result => {
+          console.log('result form create new projects', result);
+          // this.featureServices =[];
+          this.getFeatureUrl ();
+        });
 
 
+          //createData.user_id = JSON.parse(localStorage.getItem('currentUser')).user.id;
 
-      // 1. create new feature service data  then add to database and get the ID on response back
+
       // 2. create a project, add to projects table and get. id response back
+
+
+            // $http({
+            //   method: 'POST',
+            //   url: api_domain + '/projects',
+            //   data: createData
+            // }).then(result => {
+            //   console.log('result form create new projects', result);
+            // });
 
       // 3. create a linktabe item with  feature_id, project_d, user_id, then insert in to linktable.
 
-
-      createData.user_id = 2;
-      console.log('get create data ', createData);
-      $http({
-        method: 'POST',
-        url: api_domain + '/projects',
-        data: createData
-      }).then(result => {
-        console.log('result form create new projects', result);
-      });
 
 
 

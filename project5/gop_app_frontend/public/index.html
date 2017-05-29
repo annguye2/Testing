@@ -15,8 +15,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src='map.js'></script>
   <script src="app.js"> </script>
+  <script src='map.js'></script>
 </head>
 <body ng-controller='UserController as ctrl'>
   <!-- header -->
@@ -70,10 +70,13 @@
         </select>
       </div>
       <div class="col-sm-7" id="feature-layer">
-        <select  id='featureServiceSelector'  ng-model="esri.featureServices" class="form-control">
-          <option value="">---------------------Please select------------------</option>
-          <option ng-repeat="feature in esri.featureServices track by feature.title" value="{{feature.url}}">{{feature.title}}</option>
-        </select>
+        <select class="form-control"id='featureServiceSelector' ng-model="selectedName" ng-options="feature.title for feature in esri.featureServices">
+          <option value="{{feature.url}}">{{feature.title}}</option>
+     </select>
+        <!-- <select  id='featureServiceSelector'  ng-model="esri.featureServices" class="form-control">
+          <option value="">---------------------Select A Feature Service------------------</option>
+          <option ng-repeat="feature in esri.featureServices track by feature.id" value="{{feature.url}}">{{feature.title}}</option>
+        </select> -->
         <button ng-click='ctrl.getBasemap()' id='addLayer' class='button' name="button" > Add To Map</button>
         <button class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
       </div>
@@ -94,8 +97,8 @@
         </div>
         <div class="row">
           <div class="col-sm-4" id='test'>
-            <button ng-disabled='ctrl.disableUserSection'class='button'type="button" name="button">Load To Map</button>
-            <button ng-disabled='ctrl.disableUserSection'class='button'type="button" name="button">Edit</button>
+            <button ng-disabled='ctrl.disableUserSection'class='button'type="button" >Load To Map</button>
+            <button ng-disabled='ctrl.disableUserSection'class='button'type="button" ng-click='ctrl.enableEditSection()'>Edit</button>
           </div>
           <div class="form-group">
             <div class="col-sm-8">
@@ -114,36 +117,36 @@
             <div class="form-group" id='group-name'>
               <label class="control-label col-sm-2" for="Name:">Name:</label>
               <div class="col-sm-10">
-                <input type="text" id='input' ng-disabled='ctrl.disableUserSection'class="form-control">
+                <input type="text" id='input' ng-disabled='ctrl.disableEditSection'class="form-control">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="catergory">Category:</label>
               <div class="col-sm-10">
-                <input type="text" ng-disabled='ctrl.disableUserSection'id='input' class="form-control">
+                <input type="text" ng-disabled='ctrl.disableEditSection'id='input' class="form-control">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="comment">Comment:</label>
               <div class="col-sm-10">
-                <textarea class="form-control" ng-disabled='ctrl.disableUserSection'rows="2" id="textarea"></textarea>
+                <textarea class="form-control" ng-disabled='ctrl.disableEditSection'rows="2" id="textarea"></textarea>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="descritption">Description:</label>
               <div class="col-sm-10">
-                <textarea class="form-control"ng-disabled='ctrl.disableUserSection' rows="2" id="textarea"></textarea>
+                <textarea class="form-control"ng-disabled='ctrl.disableEditSection' rows="2" id="textarea"></textarea>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="descritption"> </label>
               <div class="col-sm-10">
-                <label class="checkbox-inline"> <input type="checkbox" ng-disabled='ctrl.disableUserSection'value="share">Share</label>
+                <label class="checkbox-inline"> <input type="checkbox" ng-disabled='ctrl.disableEditSection'value="share">Share</label>
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-offset-10 col-sm-10">
-                <button type="submit" ng-disabled='ctrl.disableUserSection'class="button">Submit</button>
+                <button type="submit" ng-disabled='ctrl.disableEditSection'class="button">Submit</button>
               </div>
             </div>
           </form>
@@ -175,13 +178,13 @@
             <div class="form-group" id='group-name'>
               <label class="control-label col-sm-2" for="Name:">Name:</label>
               <div class="col-sm-10">
-                <input type="text" id='input' class="form-control" ng-model='createData.name' ng-disabled="esri.disableCreateProjectSection"><span id='required'>*</span>
+                <input type="text" id='input' class="form-control" ng-model='createData.name' ng-disabled="esri.disableCreateProjectSection" placeholder="*required*">
               </div>
             </div>
             <div class="form-group" id='group-url'>
               <label class="control-label col-sm-2" for="catergory">URL:</label>
               <div class="col-sm-10">
-                <input type="text" id='input' class="form-control" ng-disabled="esri.disableCreateProjectSection"ng-model='createData.feature_url'><span id='required'>*</span>
+               <input type="text" id='input' class="form-control" ng-disabled="esri.disableCreateProjectSection"ng-model='createData.feature_url'placeholder="*required* and must be Feature Layer url">
               </div>
             </div>
             <div class="form-group" id='group-category'>

@@ -41,7 +41,10 @@ function(
 
   //************************ featureServiceSelector ***********
   $("#featureServiceSelector" ).change(function() {
-     featureLayerUrl= $("#featureServiceSelector").find("option:selected").val();
+     var index = $("#featureServiceSelector")[0].selectedIndex
+     var data = JSON.parse(localStorage.getItem('featureServices'))
+     featureLayerUrl = data[index].url
+      console.log("featureLayerUrl ",featureLayerUrl );
   });
 
   //************************ removeLayer *********************
@@ -54,21 +57,9 @@ function(
      addFeatureLayer(featureLayerUrl);
  });
 
-document.getElementById("create-project").disabled = "disabled";
-
-  $("#create-project").children().prop('disabled',true);
- console.log('after disable');
-  // //******************* build popup info ****************
-  // var buildPopUpInfor = function(url){
-  //   var tempFeatureLayer = new FeatureLayer(url);
-  //   var template = new InfoTemplate();
-  //   tempFeatureLayer.on("load", function () {
-  //     template.setTitle("<b>" + tempFeatureLayer.name + "</b>");
-  //   });
-  // }
-
  //******************* add FeatureLayer ****************
  var addFeatureLayer = function (url){
+   console.log(' Addd FeatureLayer : ', url);
    if(url) {
      console.log('add layer: ');
      var tempFeatureLayer = new FeatureLayer(url);
