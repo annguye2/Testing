@@ -54,7 +54,10 @@ function(
      addFeatureLayer(featureLayerUrl);
  });
 
+document.getElementById("create-project").disabled = "disabled";
 
+  $("#create-project").children().prop('disabled',true);
+ console.log('after disable');
   // //******************* build popup info ****************
   // var buildPopUpInfor = function(url){
   //   var tempFeatureLayer = new FeatureLayer(url);

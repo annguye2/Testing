@@ -19,7 +19,7 @@
   <script src="app.js"> </script>
 </head>
 <body ng-controller='UserController as ctrl'>
- <!-- header -->
+  <!-- header -->
   <header>
     <h1>Geospatial Online Projects</h1>
     <div class="container"   id='container-1' >
@@ -78,79 +78,76 @@
         <button class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
       </div>
     </div>
- <br><br>
-  <!-- user SECTION  -->
-  <div class="row" id='user-container'>
+    <br><br>
+    <!-- user SECTION  -->
+    <div class="row" id='user-container'>
 
-    <!-- user COLUMN -->
-    <div class="col-sm-8" id='user-col'>
-      <div class="row"> <br>
-        <div class="col-sm-6">
-          <label for="">Login as: {{ctrl.currentUser.name}}</label>
+      <!-- user COLUMN -->
+      <div class="col-sm-8" id='user-col'>
+        <div class="row"> <br>
+          <div class="col-sm-6">
+            <label for="">Login as: {{ctrl.displayUser.name}}</label>
+          </div>
+          <div class="col-sm-6">
+            <a ng-disabled='ctrl.disableUserSection'data-toggle="modal" href="#editModal"> Edit Profile</a>
+          </div> <br><br>
         </div>
-        <div class="col-sm-6">
-          <a data-toggle="modal" href="#editModal">Edit Profile</a>
-        </div> <br><br>
-      </div>
-      <div class="row">
-        <div class="col-sm-4" id='test'>
-          <button class='button'type="button" name="button">Load To Map</button>
-          <button class='button'type="button" name="button">Edit</button>
-        </div>
-        <div class="form-group">
-          <div class="col-sm-8">
-            <select class="form-control" id='user-projects'>
+        <div class="row">
+          <div class="col-sm-4" id='test'>
+            <button ng-disabled='ctrl.disableUserSection'class='button'type="button" name="button">Load To Map</button>
+            <button ng-disabled='ctrl.disableUserSection'class='button'type="button" name="button">Edit</button>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-8">
+              <select class="form-control" id='user-projects' ng-disabled='ctrl.disableUserSection'>
                 <option value="">---------------------your projects------------------</option>
-            </select>
+              </select>
+            </div>
+            <div class="col-sm-4">
+            </div>
           </div>
 
-          <div class="col-sm-4">
-            <!-- <button class='button'type="button" name="button">Load To Map</button>
-            <button class='button'type="button" name="button">Edit</button> -->
-          </div>
+        </div><br>
+
+        <div class="row">
+          <form class="form-horizontal">
+            <div class="form-group" id='group-name'>
+              <label class="control-label col-sm-2" for="Name:">Name:</label>
+              <div class="col-sm-10">
+                <input type="text" id='input' ng-disabled='ctrl.disableUserSection'class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="catergory">Category:</label>
+              <div class="col-sm-10">
+                <input type="text" ng-disabled='ctrl.disableUserSection'id='input' class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="comment">Comment:</label>
+              <div class="col-sm-10">
+                <textarea class="form-control" ng-disabled='ctrl.disableUserSection'rows="2" id="textarea"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="descritption">Description:</label>
+              <div class="col-sm-10">
+                <textarea class="form-control"ng-disabled='ctrl.disableUserSection' rows="2" id="textarea"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="descritption"> </label>
+              <div class="col-sm-10">
+                <label class="checkbox-inline"> <input type="checkbox" ng-disabled='ctrl.disableUserSection'value="share">Share</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-10 col-sm-10">
+                <button type="submit" ng-disabled='ctrl.disableUserSection'class="button">Submit</button>
+              </div>
+            </div>
+          </form>
         </div>
-
-      </div><br>
-
-      <div class="row">
-        <form class="form-horizontal">
-          <div class="form-group" id='group-name'>
-            <label class="control-label col-sm-2" for="Name:">Name:</label>
-            <div class="col-sm-10">
-              <input type="text" id='input' class="form-control">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="catergory">Category:</label>
-            <div class="col-sm-10">
-              <input type="text" id='input' class="form-control">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="comment">Comment:</label>
-            <div class="col-sm-10">
-            <textarea class="form-control" rows="2" id="textarea"></textarea>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="descritption">Description:</label>
-            <div class="col-sm-10">
-            <textarea class="form-control" rows="2" id="textarea"></textarea>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="descritption"> </label>
-            <div class="col-sm-10">
-              <label class="checkbox-inline"> <input type="checkbox" value="share">Share</label>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-sm-offset-10 col-sm-10">
-              <button type="submit" class="button">Submit</button>
-            </div>
-          </div>
-        </form>
-      </div>
 
       </div>
       <!-- end user section column -->
@@ -160,249 +157,247 @@
       <div class="col-sm-4" id='app-col'>
 
         <div class="row"> <br>
-           <label for="gender1" class="ontrol-label">Share Projects</label>
+          <label for="gender1" class="ontrol-label">Share Projects</label>
           <div class="form-group">
             <div class="col-sm-4" id='test'>
-              <button class='button'type="button" name="button">Create new project</button>
+              <button ng-disabled='ctrl.disableUserSection'class='button'type="button" name="button" ng-click='esri.enableCreateProjectSection()'>Create project</button>
               <button class='button'type="button" name="button">Load</button>
             </div>
             <div class="col-sm-8">
               <select class="form-control" id='user-projects'>
-                  <option value="">---------------------shared projects------------------</option>
+                <option value="">---------------------shared projects------------------</option>
               </select>
             </div>
           </div>
         </div> <br>
-        <div class="row">
+        <div class="row" id='create-project'>
           <form class="form-horizontal">
             <div class="form-group" id='group-name'>
               <label class="control-label col-sm-2" for="Name:">Name:</label>
               <div class="col-sm-10">
-                <input type="text" id='input' class="form-control">
+                <input type="text" id='input' class="form-control" ng-model='createData.name' ng-disabled="esri.disableCreateProjectSection"><span id='required'>*</span>
               </div>
             </div>
             <div class="form-group" id='group-url'>
               <label class="control-label col-sm-2" for="catergory">URL:</label>
               <div class="col-sm-10">
-                <input type="text" id='input' class="form-control">
+                <input type="text" id='input' class="form-control" ng-disabled="esri.disableCreateProjectSection"ng-model='createData.feature_url'><span id='required'>*</span>
               </div>
             </div>
             <div class="form-group" id='group-category'>
               <label class="control-label col-sm-2" for="catergory">Category:</label>
               <div class="col-sm-10">
-                <input type="text" id='input' class="form-control">
+                <input type="text" id='input' class="form-control" ng-model='createData.category' ng-disabled="esri.disableCreateProjectSection">
               </div>
             </div>
             <div class="form-group" id='group-comment'>
               <label class="control-label col-sm-2" for="comment">Comment:</label>
               <div class="col-sm-10">
-              <textarea class="form-control" rows="2" id="textarea"></textarea>
+                <textarea class="form-control" rows="2" id="textarea" ng-model='createData.comment' ng-disabled="esri.disableCreateProjectSection"></textarea>
               </div>
             </div>
             <div class="form-group" id='group-description'>
               <label class="control-label col-sm-2" for="descritption">Description:</label>
               <div class="col-sm-10">
-              <textarea class="form-control" rows="2" id="textarea"></textarea>
+                <textarea class="form-control" rows="2" id="textarea" ng-model='createData.description' ng-disabled="esri.disableCreateProjectSection"></textarea>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for=""> </label>
               <div class="col-sm-10">
-                <label class="checkbox-inline"> <input type="checkbox" value="share">Share</label>
+                <label class="checkbox-inline"> <input type="checkbox" value="share" ng-model='createData.shared' ng-disabled="esri.disableCreateProjectSection">Share</label>
               </div>
             </div>
             <div class="form-group">
               <div cdiv class="col-sm-offset-10 col-sm-10">
-                <button type="submit" class="button">Submit</button>
+                <button type="submit" class="button" ng-click='esri.createProject(createData)'>Submit</button>
               </div>
             </div>
           </form>
         </div>
       </div>
-     <!-- End of app Colum  -->
+      <!-- End of app Colum  -->
 
     </div>
-     <!-- End of user section -->
+    <!-- End of user section -->
 
-     <!-- modal login section -->
-     <div class="modal fade" id="logInModal" role="dialog" >
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Log In</h4>
+    <!-- modal login section -->
+    <div class="modal fade" id="logInModal" role="dialog" >
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Log In</h4>
+          </div>
+          <div class="row">
+            <div class="modal-body">
+              <label for="username">User name:</label><input id='login' ng-model='userPass.username'type="text" name="username" value="" placeholder="username">
+              <label for="password">Password:</label><input id='login' ng-model='userPass.password'type="password" name="password" value="" placeholder="password">
+              <button type="button" class="btn btn-default"  ng-click='ctrl.login(userPass)'  >Login</button>
+              <span id='required'>{{ctrl.failedLoginMsg}}</span>
+              <span id='login-success'>{{ctrl.sucessfulLoginMsg}}</span>
             </div>
-            <div class="row">
-              <div class="modal-body">
-                <label for="username">User name:</label><input id='login' ng-model='userPass.username'type="text" name="username" value="" placeholder="username">
-                <label for="password">Password:</label><input id='login' ng-model='userPass.password'type="password" name="password" value="" placeholder="password">
-                <button type="button" class="btn btn-default"  ng-click='ctrl.login(userPass)'  >Login</button>
-                <span id='required'>{{ctrl.failedLoginMsg}}</span>
-                <span id='login-success'>{{ctrl.sucessfulLoginMsg}}</span>
-              </div>
-            </div>
-            <!-- data-dismiss="modal" -->
-            <div class="modal-footer">
-              <button type="button" id='login-close-button' class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+          <!-- data-dismiss="modal" -->
+          <div class="modal-footer">
+            <button type="button" id='login-close-button' class="btn btn-default" data-dismiss="modal">Close</button>
 
-            </div>
           </div>
         </div>
       </div>
+    </div>
 
     <!-- modal register section -->
     <div class="modal fade" id="registerModal" role="dialog">
-       <div class="modal-dialog">
-         <!-- Modal content-->
-         <div class="modal-content">
-           <div class="modal-header">
-             <button type="button" class="close" data-dismiss="modal">&times;</button>
-             <h4 class="modal-title">Register Form</h4>
-           </div>
-           <div class="modal-body">
-             <div class="container" id='register'>
-               <div class="row">
-                      Fill in the information below
-               </div>
-               <div class="row">
-                    (<span id='required'>red</span> = required)
-               </div>
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Register Form</h4>
+          </div>
+          <div class="modal-body">
+            <div class="container" id='register'>
+              <div class="row">
+                Fill in the information below
+              </div>
+              <div class="row">
+                (<span id='required'>red</span> = required)
+              </div>
 
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                   <label class="control-label col-sm-2" for="name"> <span id='required'>Name:</span></label>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                   <input ng-model='registerUser.name' type="text"><br>
-                 </div>
-               </div>
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                   <label class="control-label col-sm-2"for="email">Email:</label>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                    <input ng-model='registerUser.email' type="text"><br>
-                 </div>
-               </div>
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                   <label class="control-label col-sm-2"for="username"><span id='required'>username:</span></label>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                    <input ng-model='registerUser.username'type="text"><br>
-                 </div>
-               </div>
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                   <label for="password"><span id='required'>password:</span></label>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                     <input ng-model='registerUser.password'type="password" name="">
-                 </div>
-               </div>
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                     <span id='required'>{{ctrl.registerErrorMsg}}</span>
-                     <span id='login-success'>{{ctrl.createUserSuccessMsg}}</span>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                  <label class="control-label col-sm-2" for="name"> <span id='required'>Name:</span></label>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <input ng-model='registerUser.name' type="text"><br>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                  <label class="control-label col-sm-2"for="email">Email:</label>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <input ng-model='registerUser.email' type="text"><br>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                  <label class="control-label col-sm-2"for="username"><span id='required'>username:</span></label>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <input ng-model='registerUser.username'type="text"><br>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                  <label for="password"><span id='required'>password:</span></label>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <input ng-model='registerUser.password'type="password" name="">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <span id='required'>{{ctrl.registerErrorMsg}}</span>
+                  <span id='login-success'>{{ctrl.createUserSuccessMsg}}</span>
+                </div>
+              </div>
+            </div>
 
-
-                 </div>
-               </div>
-             </div>
-
-           </div>
-           <div class="modal-footer">
-             <button type="button" ng-click='ctrl.createUser(registerUser)'class="btn btn-default" >Register</button>
-             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           </div>
-         </div>
-       </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" ng-click='ctrl.createUser(registerUser)'class="btn btn-default" >Register</button>
+            <button type="button" id='register-close-button'class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-     <!-- modal user edit section -->
-     <div class="modal fade" id="editModal" role="dialog">
-       <div class="modal-dialog">
-         <!-- Modal content-->
-         <div class="modal-content">
-           <div class="modal-header">
-             <button type="button" class="close" data-dismiss="modal">&times;</button>
-             <h4 class="modal-title">Edit profile</h4>
-           </div>
-           <div class="modal-body">
-             <div class="container" id='register'>
-               <div class="row">
-                 Fill in the information below
-               </div>
-               <div class="row">
-                 (<span id='required'>red</span> = required)
-               </div>
+    <!-- modal user edit section -->
+    <div class="modal fade" id="editModal" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Edit profile</h4>
+          </div>
+          <div class="modal-body">
+            <div class="container" id='register'>
+              <div class="row">
+                Fill in the information below
+              </div>
+              <div class="row">
+                (<span id='required'>red</span> = required)
+              </div>
 
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                   <label for="name">Name:</label>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                   <input readonly=""type="text"><br>
-                 </div>
-               </div>
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                   <label for="email">Email:</label>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                   <input type="text"><br>
-                 </div>
-               </div>
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                   <label for="username">username:</label>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                   <input readonly=""type="text"><br>
-                 </div>
-               </div>
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                   <label for="password"><span id='required'>password:</span></label>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                   <input type="text" name="">
-                 </div>
-               </div>
-               <div class="row">
-                 <div class="col-sm-5" id=''>
-                 </div>
-                 <div class="col-sm-7" id=''>
-                   {{ctrl.updateErrorMsg}}
-                 </div>
-               </div>
-             </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                  <label for="name">Name:</label>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <input type="text" readonly=""ng-model='ctrl.displayUser.name'><br>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                  <label for="email">Email:</label>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <input type="text" ng-model='ctrl.displayUser.email'><br>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                  <label for="username">username:</label>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <input readonly=""type="text" ng-model='ctrl.displayUser.username'><br>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                  <label for="password"><span id='required'>password:</span></label>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <input type="password" name="" ng-model='ctrl.displayUser.password' placeholder="type your password here"><span id='required'>*</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5" id=''>
+                </div>
+                <div class="col-sm-7" id=''>
+                  <span id='required'>{{ctrl.updateErrorMsg}}</span>
+                </div>
+              </div>
+            </div>
 
-           </div>
-           <div class="modal-footer">
-             <button ng-click='ctrl.updateProfile(updateUser)' type="button" class="btn btn-default" >Submit</button>
-             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-           </div>
-         </div>
-       </div>
-     </div>
+          </div>
+          <div class="modal-footer">
+            <button ng-click='ctrl.updateProfile()' type="button" class="btn btn-default" >Submit</button>
+            <button type="button" id='update-close-button' class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div><!-- End of page (bootstrap) container  -->
 
 
 
-<!-- footer -->
-<footer id='footer'>
-	 <div class="container" id="nav">
-		<div id="navigation">
-			<ul>
-				<li ><a href="/">Home</a></li>
-				<li><a href="#">About Us</a></li>
-				<li><a href="#">Support</a></li>
-			</ul>
-		</div><!-- navigation -->
-	</footer>
-</body>
-</html>
+  <!-- footer -->
+  <footer id='footer'>
+    <div class="container" id="nav">
+      <div id="navigation">
+        <ul>
+          <li ><a href="/">Home</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+      </div><!-- navigation -->
+    </footer>
+  </body>
+  </html>
