@@ -34,65 +34,64 @@ function(
   }, "search");
   search.startup();  // add search bar
   // *********** change base map on drop down select **********
-  $("#basemapSelector" ).change(function() {
+  $("#basemapSelector" ).change(() =>{
     // $("#basemapSelector").find("option:selected").text();
     map.setBasemap($("#basemapSelector").find("option:selected").val())
   });
 
   //************************ featureServiceSelector ***********
-  $("#featureServiceSelector" ).change(function() {
-     var index = $("#featureServiceSelector")[0].selectedIndex
-     var data = JSON.parse(localStorage.getItem('featureServices'))
-     featureLayerUrl = data[index].url
-      console.log("featureLayerUrl ",featureLayerUrl );
+  $("#featureServiceSelector" ).change(() => {
+    var index = $("#featureServiceSelector")[0].selectedIndex
+    var data = JSON.parse(localStorage.getItem('featureServices'))
+    featureLayerUrl = data[index].url
+    console.log("featureLayerUrl ",featureLayerUrl );
   });
 
   //************************ removeLayer *********************
-  $('#removeLayer').click(function(){
+  $('#removeLayer').click(() => {
     removeLayer();
   });
- //************************ add layer event *******************
- $("#addLayer").click(function(){
-   console.log("url : ", featureLayerUrl);
-     addFeatureLayer(featureLayerUrl);
- });
+  //************************ add layer event *******************
+  $("#addLayer").click(() =>{
+    console.log("url : ", featureLayerUrl);
+    addFeatureLayer(featureLayerUrl);
+  });
 
- //******************* add FeatureLayer ****************
- var addFeatureLayer = function (url){
-   console.log(' Addd FeatureLayer : ', url);
-   if(url) {
-     console.log('add layer: ');
-     var tempFeatureLayer = new FeatureLayer(url);
-     var template = new InfoTemplate();
-     tempFeatureLayer.on("load", function () {
-       template.setTitle("<b>" + tempFeatureLayer.name + "</b>");
-     });
-     var featureLayer = new FeatureLayer(url,{
-       mode: FeatureLayer.MODE_ONDEMAND,
-       infoTemplate: template,
-       outFields: ['*'],
-       opacity: 1,
-       visible: true
-     });
-     map.addLayer(featureLayer);  // add layer
-     map.refresh;
-     currentLayer = featureLayer;
-   }
-   else {  console.log("There's no url");}
+  //******************* add FeatureLayer ****************
+  var addFeatureLayer = (url) => {
+    if(url) {
+      console.log('add layer: ');
+      var tempFeatureLayer = new FeatureLayer(url);
+      var template = new InfoTemplate();
+      tempFeatureLayer.on("load", function () {
+        template.setTitle("<b>" + tempFeatureLayer.name + "</b>");
+      });
+      var featureLayer = new FeatureLayer(url,{
+        mode: FeatureLayer.MODE_ONDEMAND,
+        infoTemplate: template,
+        outFields: ['*'],
+        opacity: 1,
+        visible: true
+      });
+      map.addLayer(featureLayer);  // add layer
+      map.refresh;
+      currentLayer = featureLayer;
+    }
+    else {  console.log("There's no url");}
 
- }
+  }
   //******************* remove FeatureLayer ****************
- var removeLayer = function(){
-   if(currentLayer){
-     console.log('remove current layer: ', map);
+  var removeLayer = () => {
+    if(currentLayer){
+      console.log('remove current layer: ', map);
       map.removeLayer(currentLayer);
       map.refresh;
-   }else{console.log('no layer to remove');}
+    }else{console.log('no layer to remove');}
 
- }
+  }
   //************************ Read data**************************************
   //
-  var readData = function (){
+  var readData =  () =>{
     //var dataUrl = "https://services2.arcgis.com/1cdV1mIckpAyI7Wo/arcgis/rest/services/Hurricane_Evacuation_Routes/FeatureServer/0?f=pjson"
     // $.getJSON(DOMAIN + 'arcgis/rest/services/WebIMT_GP_UCI_Capacity/UCICapacityTool/GPServer/UCI_Capacity_Query?f=pjson&callback=?', function (data) {
     $.getJSON('https://services2.arcgis.com/1cdV1mIckpAyI7Wo/ArcGIS/rest/services?f=pjson&callback=?', function (data) {
