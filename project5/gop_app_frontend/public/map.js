@@ -41,10 +41,13 @@ function(
 
   //************************ featureServiceSelector ***********
   $("#featureServiceSelector" ).change(() => {
+
+    //alert(  $("#featureServiceSelector").find("option:selected").val());
+    console.log($("#featureServiceSelector").find("option:selected").val());
     var index = $("#featureServiceSelector")[0].selectedIndex
     var data = JSON.parse(localStorage.getItem('featureServices'))
     featureLayerUrl = data[index].url
-    console.log("featureLayerUrl ",featureLayerUrl );
+    //console.log("featureLayerUrl ",featureLayerUrl );
   });
 
   //************************ removeLayer *********************

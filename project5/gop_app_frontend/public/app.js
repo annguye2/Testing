@@ -1,5 +1,4 @@
 
-
 // Domains variables
 const app_domain = 'http://localhost:8000/';
 const api_domain = 'http://localhost:3000/';
@@ -8,11 +7,14 @@ const api_domain = 'http://localhost:3000/';
 const app = angular.module('GopApp', []);
 
 app.controller('UserController', ['$http', function($http,$window){
+
+
   // local variable;
   this.disableUserSection = true;
   this.disableEditSection = true;
   this.currentUser = {};
   this.displayUser = new Object;
+  this.currentUserProjects = [];
 
   //********************check localStorage**************
   if(localStorage.getItem('currentUser')!= undefined){
@@ -68,7 +70,7 @@ app.controller('UserController', ['$http', function($http,$window){
 
   //******************** User Login**************
   this.login = (userPass) => {
-    console.log('log in from register  userPass:', userPass );
+    // console.log('log in from register  userPass:', userPass );
     this.sucessfulLoginMsg ='';
     this.failedLoginMsg    ='';
     if (!userPass) {
@@ -86,11 +88,12 @@ app.controller('UserController', ['$http', function($http,$window){
         if(response.data.status == 200){
           console.log('login success');
           this.sucessfulLoginMsg = response.data.message;
-          this.projects = response.data.projects;
+          this.currentUserProjects = response.data.projects;  // get current user project
+          //console.log('current user project: ' , this.currentUserProjects);
           this.setLocalStorage(response.data); //store createUser information to localStorage
           setTimeout(function() {document.getElementById('login-close-button').click()}, 0);
           this.disableUserSection = false;
-          localStorage.setIt('disableUserSection',this.disableUserSection);
+
         }else {
           this.failedLoginMsg = response.data.message + "! wrong username or password";
           console.log("failed login: ", this.failedLoginMsg);
@@ -169,101 +172,174 @@ app.controller('UserController', ['$http', function($http,$window){
 
 }]); // end of user controller
 
+
+
 //***********************************************************
             //  ESRI Controller
-//***********************************************************
-
 //=======================================================ESRI controller
 app.controller('EsriController',['$http', function($http){
+ console.log(" ESRI controller ***********************");
 
   this.disableCreateProjectSection = true;
   this.basemapGallery =[
-    { value: "streets", label: "Streets Map" },
-    { value: "topo", label: "Topographic" },
-    { value: "hybrid", label: "World Imagery" },
+    { value: "streets",   label: "Streets Map" },
+    { value: "topo",      label: "Topographic" },
+    { value: "hybrid",    label: "World Imagery" },
     { value: "dark-gray", label: "Dark Gray Canvas" },
     { value: "satellite", label: "Satellite" },
-    { value: "oceans", label: "Oceans" }];
+    { value: "oceans",    label: "Oceans" }];
   this.featureServices = [];
   this.projects        = [];
 
-    //******************** get all available feature URL**************
+
+   console.log('localStorage current: ', typeof localStorage.getItem('currentUser'));
+   //console.log('Storage  ', localStorage.Storage);
+  //(typeof sideBar !== 'undefined' && sideBar !== null)
+  // if (localStorage.getItem('currentUser') !== null){
+  //   // console.log('why still goes here??');
+  //   this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
+  //   this.currentUserProject =  JSON.parse(localStorage.getItem('currentUser')).projects;
+  //   // console.log( 'in esri, currentUser projects ', this.currentUserProject);
+  // }
+  // else{
+  //   console.log("Local Storage is not available");
+  // }
+  // console.log('ESRI: currentUser', this.currentUser);
+    //******************** ESRI get all available feature URL**************
     this.getFeatureUrl = () => {
       $http({
         method: 'GET',
-        url: api_domain + '/features'
+        url:    api_domain + '/features'
       }).then(result =>{
         // console.log('seed data : ', result.data);
         this.featureServices = result.data;
         localStorage.setItem('featureServices', JSON.stringify(result.data));
       });
-      console.log('this.featureServices: ', this.featureServices);
+      // console.log('this.featureServices: ', this.featureServices);
     };
 
-    //************ loading feature URL ****************************
-    this.getProjects = () => {
-      $http({
-        method: 'GET',
-        url: api_domain + '/projects'
-      }).then(result => {
-        this.projects = result.data;
-        console.log('all projects', this.projects);
-      });
 
-    };
-
-    //****************Enable Create Project Section*****************
+    //****************ESRI nable Create Project Section*****************
     this.enableCreateProjectSection = () => {
       this.disableCreateProjectSection = false;
 
     }
-    //************ Create Project*********************************
+    //************ ESRI Create Project*********************************
     this.createProject = (createData) => {
-        console.log('get create data ', createData);
-        // 1. create new feature service data  then add to database and get the ID on response back
-        feature_id = 0;
-        var featureService ={};
-        featureService.title = createData.name + " added new new new";
-        featureService.url = createData.feature_url + 'new new';
-        featureService.data_type = "FeatureServer";
-        $http({
-          method: 'POST',
-          url: api_domain + '/features',
-          data: featureService
-        }).then(result => {
-          console.log('result form create new projects', result);
-          // this.featureServices =[];
-          this.getFeatureUrl ();
-        });
-
-
-          //createData.user_id = JSON.parse(localStorage.getItem('currentUser')).user.id;
-
-
-      // 2. create a project, add to projects table and get. id response back
-
-
-            // $http({
-            //   method: 'POST',
-            //   url: api_domain + '/projects',
-            //   data: createData
-            // }).then(result => {
-            //   console.log('result form create new projects', result);
-            // });
-
-      // 3. create a linktabe item with  feature_id, project_d, user_id, then insert in to linktable.
-
-
-
-
-
-
-
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
+        if (createData.shared == true) {
+          console.log('add share and private project');
+          this.addShareProject(createData);
+          this.addUserProjects(createData);
+        }else {
+          this.addUserProjects(createData);
+        }
+      this.getUserProjects();
+      this.getSharedProjects();
     }
 
+// *********** ESRI LOAD  user projects  ******************************
 
-    //******************* get all data ******************************
-    this.getFeatureUrl(); // get available featureServices
-    this.getProjects();
+    this.getUserProjects = () =>{
+      //  console.log('user id: ', this.currentUser.id);
+      $http({
+        method: "GET",
+        url: api_domain + "users/" + this.currentUser.id,
+        headers: {
+          Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('currentUser')).token
+        },
+      }).then(result => {
+        console.log('All User projects', result.data);
+        this.userProjects = result.data
+      });
+    }
+// ***********  ESRI add new private Project ******************************
+ this.addUserProjects = (createData) => {
+      if (createData) {
+        createData.user_id = this.currentUser.id;
+        $http({
+          method: 'POST',
+          url: api_domain + "user/"+ this.currentUser.id + '/projects',
+          data: {
+            name:         createData.name,
+            comment:      createData.comment,
+            description:  createData.description,
+            user_id:      createData.user_id,
+            category:     createData.catergory,
+            feature_url:  createData.feature_url,
+           }
+        }).then(result => {
+          console.log('result form create new share project', result);
+          this.getUserProjects();
+        });
+      }else{
+        console.log("can't update feature service");
+      }
+
+    }; //end add  new feature service
+// ***********  ESRI add new share Project ******************************
+this.addShareProject = (createData) => {
+  if (createData) {
+    createData.creator = this.currentUser.name;
+    $http({
+      method: 'POST',
+      url: api_domain + '/shareprojects',
+      data: {
+        name:         createData.name,
+        comment:      createData.comment,
+        description:  createData.description,
+        category:     createData.catergory,
+        feature_url:  createData.feature_url,
+        creator:      createData.creator
+       }
+    }).then(result => {
+      //console.log('result form create new share project', result);
+      this.getSharedProjects(); // load all public project
+    });
+  }else{
+    console.log("can't update feature service");
+  }
+
+}; //end add  new feature service
+
+// *********** ESRI add new feature service  ******************************
+
+this.addNewFeatureSerice = (createData) => {
+  if (createData) {
+    var featureService ={};
+    featureService.title = createData.name;
+    featureService.url = createData.feature_url;
+    featureService.data_type = "FeatureServer";
+    $http({
+      method: 'POST',
+      url: api_domain + '/features',
+      data: featureService
+    }).then(result => {
+      //console.log('result form create new projects', result);
+      this.getFeatureUrl (); //update feature service list;
+    });
+  }else{
+    console.log("can't update feature service");
+  }
+
+}; //end add  new feature service
+// *********** ESRI LOAD  public projects  ******************************
+
+this.getSharedProjects = () =>{
+  $http({
+    method: 'GET',
+    url: api_domain + '/shareprojects',
+  }).then(result => {
+    //console.log('All shared project', result.data);
+    this.shareProjects = result.data
+  });
+}
+
+
+//******************* get all data ******************************
+this.getFeatureUrl(); // get available featureServices
+    //this.getProjects();
     //console.log(JSON.parse(localStorage.getItem('currentUser')).user.name);
 }]); // end of EsriController
+
+// console.clear();

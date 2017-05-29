@@ -70,7 +70,7 @@
         </select>
       </div>
       <div class="col-sm-7" id="feature-layer">
-        <select class="form-control"id='featureServiceSelector' ng-model="selectedName" ng-options="feature.title for feature in esri.featureServices">
+        <select class="form-control"id='featureServiceSelector' ng-model="selectedName" ng-options="feature.url as feature.title for feature in esri.featureServices">
           <option value="{{feature.url}}">{{feature.title}}</option>
      </select>
         <!-- <select  id='featureServiceSelector'  ng-model="esri.featureServices" class="form-control">
