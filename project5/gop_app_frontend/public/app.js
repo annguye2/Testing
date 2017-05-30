@@ -3,10 +3,12 @@
 const app_domain = 'http://localhost:8000/';
 const api_domain = 'http://localhost:3000/';
 
-//==================Angular app controller ================
+//==================Angular app  ================
 const app = angular.module('GopApp', []);
 
-
+//***********************************************************
+            //  USER Controller
+//===========================================================
 app.controller('UserController', ['$http', '$scope','$rootScope',function($http,$scope,$rootScope){
 
 
@@ -179,24 +181,22 @@ app.controller('UserController', ['$http', '$scope','$rootScope',function($http,
 
 }]); // end of user controller
 
-
-
 //***********************************************************
             //  ESRI Controller
-//=======================================================ESRI controller
+//===========================================================
 app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$scope,$rootScope){
- console.log(" ESRI controller ***********************");
+  console.log(" ESRI controller ***********************");
 
-  this.disableCreateProjectSection = true;
-  this.basemapGallery =[
-    { value: "streets",   label: "Streets Map" },
-    { value: "topo",      label: "Topographic" },
-    { value: "hybrid",    label: "World Imagery" },
-    { value: "dark-gray", label: "Dark Gray Canvas" },
-    { value: "satellite", label: "Satellite" },
-    { value: "oceans",    label: "Oceans" }];
-  this.featureServices = [];
-
+    this.disableCreateProjectSection = true;
+    this.basemapGallery =[
+      { value: "streets",   label: "Streets Map" },
+      { value: "topo",      label: "Topographic" },
+      { value: "hybrid",    label: "World Imagery" },
+      { value: "dark-gray", label: "Dark Gray Canvas" },
+      { value: "satellite", label: "Satellite" },
+      { value: "oceans",    label: "Oceans" }];
+    this.featureServices = [];
+    this.selectedProjectId;
     //******************** ESRI get all available feature URL**************
     this.getFeatureUrl = () => {
       $http({
@@ -210,66 +210,103 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
       // console.log('this.featureServices: ', this.featureServices);
     };
 
-
     //****************ESRI nable Create Project Section*****************
     this.enableCreateProjectSection = () => {
       this.disableCreateProjectSection = false;
 
     }
+
     //************ ESRI Create Project*********************************
     this.createProject = (createData) => {
       this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
-        if (createData.shared == true) {
-          console.log('add share and private project');
+      if (createData.shared == true) {
+        console.log('add share and private project');
+        this.addShareProject(createData);
+        this.addUserProjects(createData);
+      }else {
+        this.addUserProjects(createData);
+      }
+
+    }
+
+    // ************* ESRI delete project **********************************
+    this.deleteProject = (deleteProject) => {
+      if(deleteProject) {
+        console.log('DELETE ' ,deleteProject);
+        $http({
+          method: "DELETE",
+          url: api_domain + "projects/" + deleteProject.id
+
+        }).then(result => {
+          console.log('DELTED: ', result);
+          this.getUserProjects();
+          this.resetEditFields();
+        });
+      }
+      else{console.log('failed to delete');}
+    }
+
+    //// *********** ESRI LOAD  Project Edit info ******************************
+    this.loadProjectEditInfo = (selectedProject) =>{
+      console.log("selectedProject: ", selectedProject);
+      if(selectedProject){
+        console.log("selected Project :", selectedProject);
+        this.selectedProjectId=selectedProject.id
+        this.editName         = selectedProject.name;
+        this.editUrl          = selectedProject.feature_url;
+        this.editComment      = selectedProject.comment;
+        this.editDescription  = selectedProject.description;
+        this.editCategory     = selectedProject.category;
+
+      }
+    }
+
+    //// *********** ESRI LOAD  user projects  ******************************
+    this.editProject = () => {
+      if (this.editShared) {
+          var createData = {};
+          createData.name        = this.currentUser.name;
+          createData.comment      = this.editComment;
+          createData.description = this.editDescription;
+          createData.catergory   = this.editCategory;
+          createData.feature_url = this.editUrl
+          createData.creator     = this.currentUser.name;
           this.addShareProject(createData);
-          this.addUserProjects(createData);
-        }else {
-          this.addUserProjects(createData);
+      }
+      $http({
+        method: "PUT",
+        url: api_domain + "projects/" + this.selectedProjectId,
+        data:{
+          name:           this.editName,
+          feature_url:    this.editUrl,
+          description:    this.editDescription,
+          comment:        this.editComment,
+          category:       this.editCategory
         }
 
+      }).then(result => {
+          if(result){
+            this.resetEditFields();
+            console.log("EDIT: success");
+          }
+      });
+
+    }//end edit
+
+    //// *********** ESRI reset edit fields in user project ******************
+    this.resetEditFields = () =>{
+      this.editName         = '';
+      this.editUrl          = '';
+      this.editDescription  = '';
+      this.editComment      = '';
+      this.editCategory     = '';
     }
 
-
-//// *********** ESRI LOAD  Project Edit info ******************************
-this.loadProjectEditInfo = (selectedProject) =>{
-  console.log("selectedProject: ", selectedProject);
-  if(selectedProject){
-    console.log("selected Project :", selectedProject);
-    this.selectedProjectId=selectedProject.id
-    this.editName         = selectedProject.name;
-    this.editUrl          = selectedProject.feature_url;
-    this.editComment      = selectedProject.comment;
-    this.editDescription  = selectedProject.description;
-    this.editCategory     = selectedProject.category;
-
-  }
-}
-
-//// *********** ESRI LOAD  user projects  ******************************
-this.editProject = () => {
-
-  $http({
-    method: "PUT",
-    url: api_domain + "projects/" + this.selectedProjectId,
-    data:{
-      name:           this.editName,
-      url:            this.editUrl,
-      description:    this.editDescription,
-      comment:        this.editComment,
-      category:       this.editCategory
-    }
-
-  }).then(result => {
-    console.log('Edit Result: ', result);
-  });
-
-}//end edit
-
-// *********** ESRI LOAD  user projects  ********************************
-this.getUserProjects = () =>{
-  console.log('get current user projects:');
+    // *********** ESRI LOAD  user projects  ********************************
+    this.getUserProjects = () =>{
+      console.log('get current user projects:');
       this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user
-        console.log('user id: ', this.currentUser.id);
+      console.log('user id: ', this.currentUser.id);
       $http({
         method: "GET",
         url: api_domain + "users/" + this.currentUser.id,
@@ -278,11 +315,12 @@ this.getUserProjects = () =>{
         },
       }).then(result => {
         this.currentUserProjects = result.data.projects;
-        console.log('Only User projects', result);
+        console.log('success: load user project');
       });
     }
-// ***********  ESRI add new private Project ******************************
- this.addUserProjects = (createData) => {
+
+    // ***********  ESRI add new private Project ******************************
+    this.addUserProjects = (createData) => {
       if (createData) {
         createData.user_id = this.currentUser.id;
         $http({
@@ -295,7 +333,7 @@ this.getUserProjects = () =>{
             user_id:      createData.user_id,
             category:     createData.catergory,
             feature_url:  createData.feature_url,
-           }
+          }
         }).then(result => {
           //console.log('result form create new share project', result);
           this.getUserProjects();
@@ -305,77 +343,85 @@ this.getUserProjects = () =>{
       }
 
     }; //end add  new feature service
-// ***********  ESRI add new share Project ******************************
-this.addShareProject = (createData) => {
-  if (createData) {
-    createData.creator = this.currentUser.name;
-    $http({
-      method: 'POST',
-      url: api_domain + '/shareprojects',
-      data: {
-        name:         createData.name,
-        comment:      createData.comment,
-        description:  createData.description,
-        category:     createData.catergory,
-        feature_url:  createData.feature_url,
-        creator:      createData.creator
-       }
-    }).then(result => {
-      //console.log('result form create new share project', result);
-      this.getSharedProjects(); // load all public project
-    });
-  }else{
-    console.log("can't update feature service");
-  }
 
-}; //end add  new feature service
+    // ***********  ESRI add new share Project ******************************
+    this.addShareProject = (createData) => {
+      if (createData) {
+        createData.creator = this.currentUser.name;
+        $http({
+          method: 'POST',
+          url: api_domain + '/shareprojects',
+          data: {
+            name:         createData.name,
+            comment:      createData.comment,
+            description:  createData.description,
+            category:     createData.catergory,
+            feature_url:  createData.feature_url,
+            creator:      createData.creator
+          }
+        }).then(result => {
+          //console.log('result form create new share project', result);
+          this.getSharedProjects(); // load all public project
+        });
+      }else{
+        console.log("can't update feature service");
+      }
 
-// *********** ESRI add new feature service  ******************************
+    }; //end add  new feature service
 
-this.addNewFeatureSerice = (createData) => {
-  if (createData) {
-    var featureService ={};
-    featureService.title = createData.name;
-    featureService.url = createData.feature_url;
-    featureService.data_type = "FeatureServer";
-    $http({
-      method: 'POST',
-      url: api_domain + '/features',
-      data: featureService
-    }).then(result => {
-      //console.log('result form create new projects', result);
-      this.getFeatureUrl (); //update feature service list;
-    });
-  }else{
-    console.log("can't update feature service");
-  }
+    // *********** ESRI add new feature service  ******************************
+    this.addNewFeatureSerice = (createData) => {
+      if (createData) {
+        var featureService ={};
+        featureService.title = createData.name;
+        featureService.url = createData.feature_url;
+        featureService.data_type = "FeatureServer";
+        $http({
+          method: 'POST',
+          url: api_domain + '/features',
+          data: featureService
+        }).then(result => {
+          //console.log('result form create new projects', result);
+          this.getFeatureUrl (); //update feature service list;
+        });
+      }else{
+        console.log("can't update feature service");
+      }
 
-}; //end add  new feature service
-// *********** ESRI LOAD  public projects  ******************************
+    }; //end add  new feature service
 
-this.getSharedProjects = () =>{
-  $http({
-    method: 'GET',
-    url: api_domain + '/shareprojects',
-  }).then(result => {
-    //console.log('All shared project', result.data);
-    this.sharedProjects = result.data;
-    // console.log("All shared projects :", this.sharedProjects);
-  });
-}
+    // *********** ESRI LOAD  public projects  ******************************
 
-// *********** ESRI Edit   projects  ******************************
+    this.getSharedProjects = () =>{
+      $http({
+        method: 'GET',
+        url: api_domain + '/shareprojects',
+      }).then(result => {
+        //console.log('All shared project', result.data);
+        this.sharedProjects = result.data;
+        // console.log("All shared projects :", this.sharedProjects);
+      });
+    }
 
+    // *********** ESRI load  projects to map  ******************************
+    this.loadProjectToMap = (selectedProject) =>{
+      if(selectedProject){
+        console.log('LOAD project to map');
+        localStorage.setItem('currentFeatureUrl', selectedProject.feature_url);
+      }else{
+        console.log("SELECT project is not found");
+      }
 
-  //******************* ESRI load initial data ******************************
-  console.log('which one is execute first');
-  this.getFeatureUrl(); // get available featureServices
-  this.getSharedProjects();
-// ************ TSTING ***************
-this.loadCurrentUserProjects = () =>{
-  this.getUserProjects();
+    }
 
-}
+    //******************* ESRI load initial data ******************************
+
+    this.getFeatureUrl(); // get available featureServices
+    this.getSharedProjects();
+
+    // ************ ESRI load Current User Projects ********* ***************
+    this.loadCurrentUserProjects = () =>{
+      this.getUserProjects();
+
+    }
 }]); // end of EsriController
-
-// console.clear();
