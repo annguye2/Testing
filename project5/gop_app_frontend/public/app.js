@@ -6,7 +6,8 @@ const api_domain = 'http://localhost:3000/';
 //==================Angular app controller ================
 const app = angular.module('GopApp', []);
 
-app.controller('UserController', ['$http', function($http,$window){
+
+app.controller('UserController', ['$http', '$scope','$rootScope',function($http,$scope,$rootScope){
 
 
   // local variable;
@@ -15,6 +16,7 @@ app.controller('UserController', ['$http', function($http,$window){
   this.currentUser = {};
   this.displayUser = new Object;
   this.currentUserProjects = [];
+
 
   //********************check localStorage**************
   if(localStorage.getItem('currentUser')!= undefined){
@@ -89,10 +91,14 @@ app.controller('UserController', ['$http', function($http,$window){
           console.log('login success');
           this.sucessfulLoginMsg = response.data.message;
           this.currentUserProjects = response.data.projects;  // get current user project
-          //console.log('current user project: ' , this.currentUserProjects);
+          $rootScope.currentUserProjects = this.currentUserProjects;
+          console.log('Usercontroll: current user project: ' , this.currentUserProjects);
           this.setLocalStorage(response.data); //store createUser information to localStorage
           setTimeout(function() {document.getElementById('login-close-button').click()}, 0);
           this.disableUserSection = false;
+
+
+
 
         }else {
           this.failedLoginMsg = response.data.message + "! wrong username or password";
@@ -153,6 +159,7 @@ app.controller('UserController', ['$http', function($http,$window){
   this.setLocalStorage = (data) => {
     if(data){
       // Put the object into storage
+      localStorage.setItem('loginSuccess', true);
       localStorage.setItem('currentUser', JSON.stringify(data));
       this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
       this.displayUser = this.currentUser;
@@ -177,7 +184,7 @@ app.controller('UserController', ['$http', function($http,$window){
 //***********************************************************
             //  ESRI Controller
 //=======================================================ESRI controller
-app.controller('EsriController',['$http', function($http){
+app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$scope,$rootScope){
  console.log(" ESRI controller ***********************");
 
   this.disableCreateProjectSection = true;
@@ -189,22 +196,7 @@ app.controller('EsriController',['$http', function($http){
     { value: "satellite", label: "Satellite" },
     { value: "oceans",    label: "Oceans" }];
   this.featureServices = [];
-  this.projects        = [];
 
-
-   console.log('localStorage current: ', typeof localStorage.getItem('currentUser'));
-   //console.log('Storage  ', localStorage.Storage);
-  //(typeof sideBar !== 'undefined' && sideBar !== null)
-  // if (localStorage.getItem('currentUser') !== null){
-  //   // console.log('why still goes here??');
-  //   this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
-  //   this.currentUserProject =  JSON.parse(localStorage.getItem('currentUser')).projects;
-  //   // console.log( 'in esri, currentUser projects ', this.currentUserProject);
-  // }
-  // else{
-  //   console.log("Local Storage is not available");
-  // }
-  // console.log('ESRI: currentUser', this.currentUser);
     //******************** ESRI get all available feature URL**************
     this.getFeatureUrl = () => {
       $http({
@@ -234,14 +226,50 @@ app.controller('EsriController',['$http', function($http){
         }else {
           this.addUserProjects(createData);
         }
-      this.getUserProjects();
-      this.getSharedProjects();
+
     }
 
-// *********** ESRI LOAD  user projects  ******************************
 
-    this.getUserProjects = () =>{
-      //  console.log('user id: ', this.currentUser.id);
+//// *********** ESRI LOAD  Project Edit info ******************************
+this.loadProjectEditInfo = (selectedProject) =>{
+  console.log("selectedProject: ", selectedProject);
+  if(selectedProject){
+    console.log("selected Project :", selectedProject);
+    this.selectedProjectId=selectedProject.id
+    this.editName         = selectedProject.name;
+    this.editUrl          = selectedProject.feature_url;
+    this.editComment      = selectedProject.comment;
+    this.editDescription  = selectedProject.description;
+    this.editCategory     = selectedProject.category;
+
+  }
+}
+
+//// *********** ESRI LOAD  user projects  ******************************
+this.editProject = () => {
+
+  $http({
+    method: "PUT",
+    url: api_domain + "projects/" + this.selectedProjectId,
+    data:{
+      name:           this.editName,
+      url:            this.editUrl,
+      description:    this.editDescription,
+      comment:        this.editComment,
+      category:       this.editCategory
+    }
+
+  }).then(result => {
+    console.log('Edit Result: ', result);
+  });
+
+}//end edit
+
+// *********** ESRI LOAD  user projects  ********************************
+this.getUserProjects = () =>{
+  console.log('get current user projects:');
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user
+        console.log('user id: ', this.currentUser.id);
       $http({
         method: "GET",
         url: api_domain + "users/" + this.currentUser.id,
@@ -249,8 +277,8 @@ app.controller('EsriController',['$http', function($http){
           Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('currentUser')).token
         },
       }).then(result => {
-        console.log('All User projects', result.data);
-        this.userProjects = result.data
+        this.currentUserProjects = result.data.projects;
+        console.log('Only User projects', result);
       });
     }
 // ***********  ESRI add new private Project ******************************
@@ -269,7 +297,7 @@ app.controller('EsriController',['$http', function($http){
             feature_url:  createData.feature_url,
            }
         }).then(result => {
-          console.log('result form create new share project', result);
+          //console.log('result form create new share project', result);
           this.getUserProjects();
         });
       }else{
@@ -331,15 +359,23 @@ this.getSharedProjects = () =>{
     url: api_domain + '/shareprojects',
   }).then(result => {
     //console.log('All shared project', result.data);
-    this.shareProjects = result.data
+    this.sharedProjects = result.data;
+    // console.log("All shared projects :", this.sharedProjects);
   });
 }
 
+// *********** ESRI Edit   projects  ******************************
 
-//******************* get all data ******************************
-this.getFeatureUrl(); // get available featureServices
-    //this.getProjects();
-    //console.log(JSON.parse(localStorage.getItem('currentUser')).user.name);
+
+  //******************* ESRI load initial data ******************************
+  console.log('which one is execute first');
+  this.getFeatureUrl(); // get available featureServices
+  this.getSharedProjects();
+// ************ TSTING ***************
+this.loadCurrentUserProjects = () =>{
+  this.getUserProjects();
+
+}
 }]); // end of EsriController
 
 // console.clear();
