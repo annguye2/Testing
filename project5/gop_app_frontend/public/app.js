@@ -11,15 +11,12 @@ const app = angular.module('GopApp', []);
 //===========================================================
 app.controller('UserController', ['$http', '$scope','$rootScope',function($http,$scope,$rootScope){
 
-
   // local variable;
   this.disableUserSection = true;
   this.disableEditSection = true;
   this.currentUser = {};
   this.displayUser = new Object;
   this.currentUserProjects = [];
-
-
   //********************check localStorage**************
   if(localStorage.getItem('currentUser')!= undefined){
     this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
@@ -69,7 +66,6 @@ app.controller('UserController', ['$http', '$scope','$rootScope',function($http,
       })
     }
     registerUser = '';
-
   };// end of createUser
 
   //******************** User Login**************
@@ -98,10 +94,6 @@ app.controller('UserController', ['$http', '$scope','$rootScope',function($http,
           this.setLocalStorage(response.data); //store createUser information to localStorage
           setTimeout(function() {document.getElementById('login-close-button').click()}, 0);
           this.disableUserSection = false;
-
-
-
-
         }else {
           this.failedLoginMsg = response.data.message + "! wrong username or password";
           console.log("failed login: ", this.failedLoginMsg);
@@ -125,7 +117,6 @@ app.controller('UserController', ['$http', '$scope','$rootScope',function($http,
       this.updateErrorMsg = "missing password";
       console.log('missing password');
       return;
-
     }
     if ((this.currentUser.email == "" || this.currentUser.email == undefined)){
       this.updateErrorMsg = "missing email";
@@ -176,7 +167,6 @@ app.controller('UserController', ['$http', '$scope','$rootScope',function($http,
   //******************** Enable Edit Section********
   this.enableEditSection = () =>{
     this.disableEditSection = false;
-    //localStorage.setIt('disableEditSection',this.disableEditSection )
   }
 
 }]); // end of user controller
@@ -197,7 +187,29 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
       { value: "oceans",    label: "Oceans" }];
     this.featureServices = [];
     this.selectedProjectId;
-    //******************** ESRI get all available feature URL**************
+
+    //******************** ESRI Save Map to Project********************
+    this.createProjectFromMap = (selectedFeature) => {
+      alert(selectedFeature.data_type)
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
+      if (!this.currentUser){
+        this.requiredLoginMsg = "Login required!";
+        console.log('no user login?');
+      }else{
+        this.requiredLoginMsg = '';
+        // console.log('Add Project from Map', selectedFeature);
+        var createData = {}
+        createData.name         = selectedFeature.title;
+        createData.feature_url  = selectedFeature.url;
+        createData.category     = selectedFeature.data_type;
+        createData.comment      = "";
+        createData.user_id      = this.currentUser.id;
+        createData.description  = "";
+        this.addUserProjects(createData);
+      }
+    }
+
+    //******************** ESRI get all available feature URL**********
     this.getFeatureUrl = () => {
       $http({
         method: 'GET',
@@ -210,7 +222,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
       // console.log('this.featureServices: ', this.featureServices);
     };
 
-    //****************ESRI nable Create Project Section*****************
+    //****************ESRI nable Create Project Section****************
     this.enableCreateProjectSection = () => {
       this.disableCreateProjectSection = false;
 
@@ -229,7 +241,23 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
 
     }
 
-    // ************* ESRI delete project **********************************
+    //************* ESRI delete shareprojects ******************************
+    this.deleteSharedProject = (deleteProject) => {
+      if(deleteProject) {
+        console.log('DELETE ' ,deleteProject);
+        $http({
+          method: "DELETE",
+          url: api_domain + "shareprojects/" + deleteProject.id
+
+        }).then(result => {
+          console.log('DELTED: ', result);
+          this.getSharedProjects();
+        });
+      }
+      else{console.log('failed to delete');}
+    }
+
+    // ************* ESRI delete project ******************************
     this.deleteProject = (deleteProject) => {
       if(deleteProject) {
         console.log('DELETE ' ,deleteProject);
@@ -246,7 +274,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
       else{console.log('failed to delete');}
     }
 
-    //// *********** ESRI LOAD  Project Edit info ******************************
+    //// *********** ESRI LOAD  Project Edit info *********************
     this.loadProjectEditInfo = (selectedProject) =>{
       console.log("selectedProject: ", selectedProject);
       if(selectedProject){
@@ -257,22 +285,23 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
         this.editComment      = selectedProject.comment;
         this.editDescription  = selectedProject.description;
         this.editCategory     = selectedProject.category;
-
       }
     }
 
-    //// *********** ESRI LOAD  user projects  ******************************
+    //// *********** ESRI LOAD  user projects  ************************
     this.editProject = () => {
+      // post project to public
       if (this.editShared) {
           var createData = {};
-          createData.name        = this.currentUser.name;
-          createData.comment      = this.editComment;
+          createData.name        = this.editName;
+          createData.comment     = this.editComment;
           createData.description = this.editDescription;
           createData.catergory   = this.editCategory;
           createData.feature_url = this.editUrl
           createData.creator     = this.currentUser.name;
           this.addShareProject(createData);
       }
+      //add project to userlist
       $http({
         method: "PUT",
         url: api_domain + "projects/" + this.selectedProjectId,
@@ -293,7 +322,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
 
     }//end edit
 
-    //// *********** ESRI reset edit fields in user project ******************
+    //// *********** ESRI reset edit fields in user project **********
     this.resetEditFields = () =>{
       this.editName         = '';
       this.editUrl          = '';
@@ -302,7 +331,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
       this.editCategory     = '';
     }
 
-    // *********** ESRI LOAD  user projects  ********************************
+    // *********** ESRI LOAD  user projects  *************************
     this.getUserProjects = () =>{
       console.log('get current user projects:');
       this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user
@@ -319,7 +348,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
       });
     }
 
-    // ***********  ESRI add new private Project ******************************
+    // ***********  ESRI add new private Project **********************
     this.addUserProjects = (createData) => {
       if (createData) {
         createData.user_id = this.currentUser.id;
@@ -344,7 +373,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
 
     }; //end add  new feature service
 
-    // ***********  ESRI add new share Project ******************************
+    // ***********  ESRI add new share Project ************************
     this.addShareProject = (createData) => {
       if (createData) {
         createData.creator = this.currentUser.name;
@@ -369,7 +398,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
 
     }; //end add  new feature service
 
-    // *********** ESRI add new feature service  ******************************
+    // *********** ESRI add new feature service  **********************
     this.addNewFeatureSerice = (createData) => {
       if (createData) {
         var featureService ={};
@@ -390,7 +419,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
 
     }; //end add  new feature service
 
-    // *********** ESRI LOAD  public projects  ******************************
+    // *********** ESRI LOAD  public projects  ************************
 
     this.getSharedProjects = () =>{
       $http({
@@ -403,8 +432,9 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
       });
     }
 
-    // *********** ESRI load  projects to map  ******************************
+    // *********** ESRI load  projects to map  ************************
     this.loadProjectToMap = (selectedProject) =>{
+      console.log("selectedProject: ", selectedProject);
       if(selectedProject){
         console.log('LOAD project to map');
         localStorage.setItem('currentFeatureUrl', selectedProject.feature_url);
@@ -414,12 +444,12 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
 
     }
 
-    //******************* ESRI load initial data ******************************
+    //******************* ESRI load initial data **********************
 
     this.getFeatureUrl(); // get available featureServices
     this.getSharedProjects();
 
-    // ************ ESRI load Current User Projects ********* ***************
+    // ************ ESRI load Current User Projects *******************
     this.loadCurrentUserProjects = () =>{
       this.getUserProjects();
 

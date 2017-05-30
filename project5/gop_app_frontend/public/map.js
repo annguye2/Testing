@@ -19,7 +19,7 @@ function(
     var  basemapSelector ;
     var featureLayerUrl;
     var currentLayer;
-    //*********************** Loading map  ***********************
+    //*********************** Loading map  ********************
     // console.log('map is loading..');
     var map = new Map("map", {
       basemap:"streets",
@@ -28,18 +28,18 @@ function(
       center: [-77.0369, 38.9072, ],
       zoom: 10
     });
-    //*********************** add serch bar  ***********************
+    //*********************** add serch bar  *******************
     var search = new Search({
       map: map
      }, "search");
      search.startup();  // add search bar
-    // *********** change base map on drop down select **********
+    // *********** change base map on drop down select *********
     $("#basemapSelector" ).change(() =>{
       // $("#basemapSelector").find("option:selected").text();
       map.setBasemap($("#basemapSelector").find("option:selected").val())
     });
 
-    //************************ featureServiceSelector ***********
+    //************************ featureServiceSelector **********
     $("#featureServiceSelector" ).change(() => {
 
       //alert(  $("#featureServiceSelector").find("option:selected").val());
@@ -50,8 +50,8 @@ function(
       //console.log("featureLayerUrl ",featureLayerUrl );
     });
 
-    //************************ featureServiceSelector ***********
-    $("#loadProjectToMap" ).click(() => {
+    //************************ featureServiceSelector **********
+    $("#loadProjectToMap").click(() => {
       if(localStorage.getItem('currentFeatureUrl')){
         featureLayerUrl = localStorage.getItem('currentFeatureUrl');
         addFeatureLayer(featureLayerUrl);
@@ -59,18 +59,26 @@ function(
       }
     });
 
+    //************************ Load ShareProject To map ********
+    $('#loadSharedProjectToMap').click(() => {
+      if(localStorage.getItem('currentFeatureUrl')){
+        featureLayerUrl = localStorage.getItem('currentFeatureUrl');
+        addFeatureLayer(featureLayerUrl);
+        console.log('ADD Map');
+      }
+    });
     //************************ removeLayer *********************
     $('#removeLayer').click(() => {
       removeLayer();
     });
 
-    //************************ add layer event *******************
+    //************************ add layer event ******************
     $("#addLayer").click(() =>{
       console.log("url : ", featureLayerUrl);
       addFeatureLayer(featureLayerUrl);
     });
 
-    //******************* add FeatureLayer ****************
+    //******************* add FeatureLayer **********************
     var addFeatureLayer = (url) => {
       if(url) {
         console.log('add layer: ');
@@ -90,11 +98,11 @@ function(
         map.refresh;
         currentLayer = featureLayer;
       }
-      else {  console.log("There's no url");}
+      else {  console.log("no layer to add");}
 
     }
 
-    //******************* remove FeatureLayer ****************
+    //******************* remove FeatureLayer *******************
     var removeLayer = () => {
       if(currentLayer){
         console.log('remove current layer: ', map);
@@ -103,7 +111,7 @@ function(
       }else{console.log('no layer to remove');}
 
     }
-    //************************ Read data**************************************
+    //************************ Read data*************************
     //
     var readData =  () =>{
       //var dataUrl = "https://services2.arcgis.com/1cdV1mIckpAyI7Wo/arcgis/rest/services/Hurricane_Evacuation_Routes/FeatureServer/0?f=pjson"

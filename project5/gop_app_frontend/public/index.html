@@ -69,12 +69,13 @@
         </select>
       </div>
       <div class="col-sm-7" id="feature-layer">
-        <select class="form-control"id='featureServiceSelector' ng-model="ctrl.selectedFeatureName" ng-options="feature.url as feature.title for feature in esri.featureServices">
+        <select class="form-control"id='featureServiceSelector' ng-model="selectedFeature" ng-options="feature as feature.title for feature in esri.featureServices">
           <option value="">---------------------Select A Feature Service------------------</option>
      </select>
         <button ng-click='ctrl.getBasemap()' id='addLayer' class='button' name="button" > Add To Map</button>
         <button class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
-        <button ng-disabled='ctrl.disableUserSection'class='button' type="button" id='removeLayer' name="removelayer"> Save</button>
+        <button class='button' type="button" id='removeLayer' name="removelayer" ng-click='esri.createProjectFromMap(selectedFeature)'> Save To  Your Projects</button>
+        <span id='required'>{{esri.requiredLoginMsg}}</span>
       </div>
     </div>
     <br><br>
@@ -170,10 +171,10 @@
           <div class="form-group">
             <div class="col-sm-4" id='test'>
               <button ng-disabled='ctrl.disableUserSection'class='button'type="button" name="button" ng-click='esri.enableCreateProjectSection()'>Create project</button>
-              <button class='button'type="button" name="button">Load</button>
+              <button ng-click='esri.loadProjectToMap(selectedProject)'class='button'type="button" id='loadSharedProjectToMap'name="button">Load</button>
             </div>
             <div class="col-sm-8">
-              <select class="form-control" id='shared-projects' ng-model='esri.selectSharedProjectName'ng-options="project.feature_url as project.name for project in esri.sharedProjects"  >
+              <select class="form-control" id='shared-projects' ng-model='selectedProject'ng-options="project.name for project in esri.sharedProjects"  >
                           <option value="">---------------------Shared Projects------------------</option>
               </select>
             </div>
@@ -220,6 +221,7 @@
             <div class="form-group">
               <div cdiv class="col-sm-offset-10 col-sm-10">
                 <button type="submit" class="button" ng-click='esri.createProject(createData)'>Submit</button>
+                <button type="submit" ng-disabled='ctrl.disableEditSection'class="button" ng-click='esri.deleteSharedProject(selectedProject)'>Delete</button>
               </div>
             </div>
           </form>
