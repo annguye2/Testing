@@ -168,6 +168,7 @@ app.controller('UserController', ['$http', '$scope','$rootScope',function($http,
 
   //******************** Enable Edit Section********
   this.enableEditSection = () =>{
+    console.log('enable edit');
     this.disableEditSection = false;
   }
 
@@ -299,16 +300,16 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
     }
 
     //// *********** ESRI LOAD  Project Edit info *********************
-    this.loadProjectEditInfo = (selectedProject) =>{
-      console.log("selectedProject: ", selectedProject);
-      if(selectedProject){
-        console.log("selected Project :", selectedProject);
-        this.selectedProjectId=selectedProject.id
-        this.editName         = selectedProject.name;
-        this.editUrl          = selectedProject.feature_url;
-        this.editComment      = selectedProject.comment;
-        this.editDescription  = selectedProject.description;
-        this.editCategory     = selectedProject.category;
+    this.loadProjectEditInfo = (selectedprivateProject) =>{
+      console.log("selectedProject: ", selectedprivateProject);
+      if(selectedprivateProject){
+        // console.log("selected Project :", selectedprivateProject);
+        this.selectedProjectId=selectedprivateProject.id
+        this.editName         = selectedprivateProject.name;
+        this.editUrl          = selectedprivateProject.feature_url;
+        this.editComment      = selectedprivateProject.comment;
+        this.editDescription  = selectedprivateProject.description;
+        this.editCategory     = selectedprivateProject.category;
         this.resetSelectFeatureeRequireMsg();
       }else {
         this.selectProjectRequireMsg = "You must select a feature above";
