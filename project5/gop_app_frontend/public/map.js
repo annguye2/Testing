@@ -5,6 +5,11 @@ require([
   "esri/tasks/query",
   "esri/dijit/Search",
   "esri/InfoTemplate",
+  "esri/dijit/HomeButton",
+  "esri/dijit/Scalebar",
+  "dojo/on",
+  "dojo/dom",
+  "dojo/ready",
   "dojo/domReady!"
 ],
 function(
@@ -14,25 +19,70 @@ function(
   Query,
   Search,
   InfoTemplate,
-  PopupTemplate
+  HomeButton,
+  Scalebar,
+  on,
+  dom,
+  ready
+
+  // PopupTemplate
 ) {
-    var  basemapSelector ;
+    var basemapSelector ;
     var featureLayerUrl;
     var currentLayer;
-    //*********************** Loading map  ********************
+    var usCenter = [-98.5795, 39.828175];
+    var centralUS = [-97.380979, 42.877742];  //central us
+    var centralVA = [-77.871094, 37.439974];  // central virginia
+    var centralNY = [-77.0369, 38.9072];
+
+    //*********************** Map components initialize  ********************
     // console.log('map is loading..');
     var map = new Map("map", {
       basemap:"streets",
-      //center: [-97.380979, 42.877742],  //central us
-      // center: [-77.871094, 37.439974],  // central virginia
-      center: [-77.0369, 38.9072, ],
+      center: centralVA,
+      sliderPosition: "top-right",
       zoom: 10
     });
+    //************ hide waiting image
+    function init() {
+      loading = dom.byId("loadingImg");  //loading image. i
+      on(map, "update-start", showLoading);
+      on(map, "update-end", hideLoading);
+      console.log(map);
+    }
+    function showLoading() {
+     esri.show(loading);
+     map.disableMapNavigation();
+     map.hideZoomSlider();
+   }
+    function hideLoading(error) {
+     esri.hide(loading);
+     map.enableMapNavigation();
+     map.showZoomSlider();
+   }
+
+
+
+    // Home Button
+    var home = new HomeButton({
+        map: map,
+        attachTo: "top-left"
+    }, "HomeButton");
+    home.startup();
+
+    // Scalebar
+    var scalebar = new Scalebar({
+      map: map,
+     attachTo: "top-left"
+   }, dojo.byId("scalebar"));
+
     //*********************** add serch bar  *******************
     var search = new Search({
       map: map
      }, "search");
      search.startup();  // add search bar
+
+
     // *********** change base map on drop down select *********
     $("#basemapSelector" ).change(() =>{
       // $("#basemapSelector").find("option:selected").text();
@@ -41,9 +91,6 @@ function(
 
     //************************ featureServiceSelector **********
     $("#featureServiceSelector" ).change(() => {
-
-      //alert(  $("#featureServiceSelector").find("option:selected").val());
-      //console.log($("#featureServiceSelector").find("option:selected").val());
       var index = $("#featureServiceSelector")[0].selectedIndex
       var data = JSON.parse(localStorage.getItem('featureServices'))
       featureLayerUrl = data[index].url
@@ -61,11 +108,14 @@ function(
 
     //************************ Load ShareProject To map ********
     $('#loadSharedProjectToMap').click(() => {
+      console.log('loading from here..', localStorage.getItem('currentFeatureUrl'));
       if(localStorage.getItem('currentFeatureUrl')){
         featureLayerUrl = localStorage.getItem('currentFeatureUrl');
         addFeatureLayer(featureLayerUrl);
         console.log('ADD Map');
-      }
+
+      }else{ console.log('Can not add layer');}
+      localStorage.setItem('currentFeatureUrl', "");
     });
     //************************ removeLayer *********************
     $('#removeLayer').click(() => {
@@ -97,6 +147,7 @@ function(
         map.addLayer(featureLayer);  // add layer
         map.refresh;
         currentLayer = featureLayer;
+      //
       }
       else {  console.log("no layer to add");}
 
@@ -108,6 +159,8 @@ function(
         console.log('remove current layer: ', map);
         map.removeLayer(currentLayer);
         map.refresh;
+        currentLayer = '';
+        featureLayerUrl = '';
       }else{console.log('no layer to remove');}
 
     }
@@ -126,8 +179,10 @@ function(
         }
       });
     };// end of read data function
-
+   
   //********** testing ******************
-  //readData();
+
+  // ready(init(map));
+  ready(init);
   //******** end testing section ********
 });// end ESRI require

@@ -58,7 +58,14 @@
 
     <!-- map section -->
     <div class="row" id='map-section'>
-      <div  id="map"> </div>
+      <div  id="map">
+        <div class="row">
+           <div class="col-sm-2" id="HomeButton"></div>
+           <div class="col-sm-2" id="scalebar">d</div>
+             <!-- <img id="loadingimg" src="images/loading.gif" style="position:absolute; right:475px; top:56px; z-index:200;" /> -->
+             <img id="loadingImg"  src="images/loading.gif" style="position:absolute; right:512px; top:256px; z-index:100;" />
+        </div>
+      </div>
     </div>
     <div class="row" id='map-tool'>
       <div class="col-sm-3" id="search"> </div>
@@ -69,13 +76,14 @@
         </select>
       </div>
       <div class="col-sm-7" id="feature-layer">
-        <select class="form-control"id='featureServiceSelector' ng-model="selectedFeature" ng-options="feature as feature.title for feature in esri.featureServices">
+        <select ng-change='esri.resetSelectFeatureeRequireMsg(selectedFeature)'class="form-control"id='featureServiceSelector' ng-model="selectedFeature" ng-options="feature as feature.title for feature in esri.featureServices | orderBy: 'title'">
           <option value="">---------------------Select A Feature Service------------------</option>
      </select>
         <button ng-click='ctrl.getBasemap()' id='addLayer' class='button' name="button" > Add To Map</button>
-        <button class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
-        <button class='button' type="button" id='removeLayer' name="removelayer" ng-click='esri.createProjectFromMap(selectedFeature)'> Save To  Your Projects</button>
-        <span id='required'>{{esri.requiredLoginMsg}}</span>
+        <button ng-click='esri.removeLayer()'class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
+        <button class='button' type="button" ng-click='esri.createProjectFromMap(selectedFeature)'> Save To  Your Projects</button>
+        <span id='required' ng-show='ctrl.loginRequired'>{{esri.requiredLoginMsg}}</span>
+        <span id='required' ng-show='ctrl.loginRequired'>{{esri.selectFeatureRequireMsg}}</span>
       </div>
     </div>
     <br><br>
@@ -94,15 +102,16 @@
         </div>
         <div class="row">
           <div class="col-sm-4" id='test'>
-            <button id='loadProjectToMap'ng-disabled='ctrl.disableUserSection' class='button'type="button" ng-click='esri.loadProjectToMap(selectedProject)'>Load To Map</button>
-            <button ng-disabled='ctrl.disableUserSection'class='button'type="button" ng-click='ctrl.enableEditSection(); esri.loadProjectEditInfo(selectedProject)'>Edit</button>
+            <button id='loadProjectToMap'ng-disabled='ctrl.disableUserSection' class='button'type="button" ng-click='esri.loadProjectToMap(selectedprivateProject, false)'>Load To Map</button>
+            <button ng-disabled='ctrl.disableUserSection'class='button'type="button" ng-click='ctrl.enableEditSection(); esri.loadProjectEditInfo(selectedPrivateProject)'>Edit</button>
           </div>
           <div class="form-group">
             <div class="col-sm-8">
-              <select ng-click='esri.loadCurrentUserProjects()'class="form-control" id='user-projects' ng-disabled='ctrl.disableUserSection'
-                ng-model='selectedProject'ng-options="project.name for project in esri.currentUserProjects"  >
+              <select ng-click='esri.loadCurrentUserProjects()' ng-change='esri.resetSelectProjectRequireMsg(selectedProject)'class="form-control" id='user-projects' ng-disabled='ctrl.disableUserSection'
+                ng-model='selectedprivateProject'ng-options="project.name for project in esri.currentUserProjects | orderBy: 'name'"  >
                     <option value="">-- Your Projects --</option>
               </select>
+              <span id='required'>{{esri.selectProjectRequireMsg}}</span>
             </div>
             <div class="col-sm-4">
             </div>
@@ -114,7 +123,7 @@
             <div class="form-group" id='group-name'>
               <label class="control-label col-sm-2" for="Name:">Name:</label>
               <div class="col-sm-10">
-                <input type="text" id='input' ng-disabled='ctrl.disableEditSection'class="form-control" ng-model='esri.editName'>
+                <input type="text" id='input' ng-disabled='ctrl.disableEditSection'class="form-control" ng-model='esri.editName' placeholder="">
               </div>
             </div>
             <div class="form-group" id='group-name'>
@@ -162,7 +171,6 @@
       </div>
       <!-- end user section column -->
 
-
       <!-- app section (COLUM) -->
       <div class="col-sm-4" id='app-col'>
 
@@ -171,12 +179,14 @@
           <div class="form-group">
             <div class="col-sm-4" id='test'>
               <button ng-disabled='ctrl.disableUserSection'class='button'type="button" name="button" ng-click='esri.enableCreateProjectSection()'>Create project</button>
-              <button ng-click='esri.loadProjectToMap(selectedProject)'class='button'type="button" id='loadSharedProjectToMap'name="button">Load</button>
+              <button ng-click='esri.loadProjectToMap(selectedPublicProject, true)'class='button'type="button" id='loadSharedProjectToMap'name="button">Load</button>
             </div>
             <div class="col-sm-8">
-              <select class="form-control" id='shared-projects' ng-model='selectedProject'ng-options="project.name for project in esri.sharedProjects"  >
+              <select ng-change='esri.resetSelectSharedProjectRequireMsg(selectedPublicProject)'  class="form-control" id='shared-projects'
+               ng-model='selectedPublicProject'ng-options="project.name for project in esri.sharedProjects | orderBy: 'name'"  >
                           <option value="">---------------------Shared Projects------------------</option>
               </select>
+                <span id='required'>{{esri.selectSharedProjectRequireMsg}}</span>
             </div>
           </div>
         </div> <br>
@@ -245,7 +255,7 @@
             <div class="modal-body">
               <label for="username">User name:</label><input id='login' ng-model='userPass.username'type="text" name="username" value="" placeholder="username">
               <label for="password">Password:</label><input id='login' ng-model='userPass.password'type="password" name="password" value="" placeholder="password">
-              <button type="button" class="btn btn-default"  ng-click='ctrl.login(userPass)'  >Login</button>
+              <button type="button" class="btn btn-default"  ng-click='ctrl.login(userPass)'>Login</button>
               <span id='required'>{{ctrl.failedLoginMsg}}</span>
               <span id='login-success'>{{ctrl.sucessfulLoginMsg}}</span>
             </div>
@@ -272,17 +282,17 @@
             <div class="container" id='register'>
               <div class="row">
                 Fill in the information below
-              </div>
-              <div class="row">
+              </div> <br>
+              <!-- <div class="row">
                 (<span id='required'>red</span> = required)
-              </div>
+              </div> -->
 
               <div class="row">
                 <div class="col-sm-5" id=''>
-                  <label class="control-label col-sm-2" for="name"> <span id='required'>Name:</span></label>
+                  <label class="control-label col-sm-2" for="name">Name:</label>
                 </div>
                 <div class="col-sm-7" id=''>
-                  <input ng-model='registerUser.name' type="text"><br>
+                  <input ng-model='registerUser.name' type="text" placeholder="*required*"><br>
                 </div>
               </div>
               <div class="row">
@@ -295,18 +305,18 @@
               </div>
               <div class="row">
                 <div class="col-sm-5" id=''>
-                  <label class="control-label col-sm-2"for="username"><span id='required'>username:</span></label>
+                  <label class="control-label col-sm-2"for="username">username:</label>
                 </div>
                 <div class="col-sm-7" id=''>
-                  <input ng-model='registerUser.username'type="text"><br>
+                  <input ng-model='registerUser.username'type="text" placeholder="*required*"><br>
                 </div>
               </div>
               <div class="row">
-                <div class="col-sm-5" id=''>
-                  <label for="password"><span id='required'>password:</span></label>
+                <div class="col-sm-7" id=''>
+                  <label for="password">password:</label>
                 </div>
                 <div class="col-sm-7" id=''>
-                  <input ng-model='registerUser.password'type="password" name="">
+                  <input ng-model='registerUser.password'type="password" name="" placeholder="*required*">
                 </div>
               </div>
               <div class="row">
@@ -342,9 +352,9 @@
               <div class="row">
                 Fill in the information below
               </div>
-              <div class="row">
+              <!-- <div class="row">
                 (<span id='required'>red</span> = required)
-              </div>
+              </div> -->
 
               <div class="row">
                 <div class="col-sm-5" id=''>
@@ -372,10 +382,10 @@
               </div>
               <div class="row">
                 <div class="col-sm-5" id=''>
-                  <label for="password"><span id='required'>password:</span></label>
+                  <label for="password">password:</label>
                 </div>
                 <div class="col-sm-7" id=''>
-                  <input type="password" name="" ng-model='ctrl.displayUser.password' placeholder="type your password here"><span id='required'>*</span>
+                  <input type="password" name="" ng-model='ctrl.displayUser.password' placeholder="*required*">
                 </div>
               </div>
               <div class="row">

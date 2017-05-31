@@ -17,6 +17,7 @@ app.controller('UserController', ['$http', '$scope','$rootScope',function($http,
   this.currentUser = {};
   this.displayUser = new Object;
   this.currentUserProjects = [];
+  this.loginRequired = true;
   //********************check localStorage**************
   if(localStorage.getItem('currentUser')!= undefined){
     this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
@@ -93,6 +94,7 @@ app.controller('UserController', ['$http', '$scope','$rootScope',function($http,
           console.log('Usercontroll: current user project: ' , this.currentUserProjects);
           this.setLocalStorage(response.data); //store createUser information to localStorage
           setTimeout(function() {document.getElementById('login-close-button').click()}, 0);
+          this.loginRequired = !this.loginRequired;
           this.disableUserSection = false;
         }else {
           this.failedLoginMsg = response.data.message + "! wrong username or password";
@@ -190,22 +192,44 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
 
     //******************** ESRI Save Map to Project********************
     this.createProjectFromMap = (selectedFeature) => {
-      alert(selectedFeature.data_type)
-      this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
-      if (!this.currentUser){
+      console.log(selectedFeature);
+      if(localStorage.getItem('loginSuccess')!= null || localStorage.getItem('loginSuccess')!= undefined){
+        if(selectedFeature){
+          this.currentUser = JSON.parse(localStorage.getItem('currentUser')).user;
+          var createData = {}
+          createData.name         = selectedFeature.title;
+          createData.feature_url  = selectedFeature.url;
+          createData.category     = selectedFeature.data_type;
+          createData.comment      = "";
+          createData.user_id      = this.currentUser.id;
+          createData.description  = "";
+          this.addUserProjects(createData);
+          this.selectFeatureRequireMsg ='';
+        }else {
+          this.selectFeatureRequireMsg = "You must select a feature above";
+        }
+
+      }else {
         this.requiredLoginMsg = "Login required!";
-        console.log('no user login?');
-      }else{
-        this.requiredLoginMsg = '';
-        // console.log('Add Project from Map', selectedFeature);
-        var createData = {}
-        createData.name         = selectedFeature.title;
-        createData.feature_url  = selectedFeature.url;
-        createData.category     = selectedFeature.data_type;
-        createData.comment      = "";
-        createData.user_id      = this.currentUser.id;
-        createData.description  = "";
-        this.addUserProjects(createData);
+      }
+
+    }
+
+    //******************** ESRI resetSelectFeatureeRequireMsg L**********
+    this.resetSelectProjectRequireMsg = (selectedProject) =>{
+      if(selectedProject){
+        console.log('ng-change');
+        this.selectProjectRequireMsg = '';
+      }
+      else{
+        console.log('invalid selected Project');
+      }
+    }
+
+    //******************** ESRI resetSelectFeatureeRequireMsg L**********
+    this.resetSelectFeatureeRequireMsg = (selectedFeature) =>{
+      if(selectedFeature){
+        this.selectFeatureRequireMsg = '';
       }
     }
 
@@ -285,6 +309,9 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
         this.editComment      = selectedProject.comment;
         this.editDescription  = selectedProject.description;
         this.editCategory     = selectedProject.category;
+        this.resetSelectFeatureeRequireMsg();
+      }else {
+        this.selectProjectRequireMsg = "You must select a feature above";
       }
     }
 
@@ -420,7 +447,6 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
     }; //end add  new feature service
 
     // *********** ESRI LOAD  public projects  ************************
-
     this.getSharedProjects = () =>{
       $http({
         method: 'GET',
@@ -430,28 +456,45 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
         this.sharedProjects = result.data;
         // console.log("All shared projects :", this.sharedProjects);
       });
-    }
+    };
 
     // *********** ESRI load  projects to map  ************************
-    this.loadProjectToMap = (selectedProject) =>{
-      console.log("selectedProject: ", selectedProject);
+    this.loadProjectToMap = (selectedProject, isPublic) =>{
+      console.log('loading... ');
       if(selectedProject){
         console.log('LOAD project to map');
         localStorage.setItem('currentFeatureUrl', selectedProject.feature_url);
       }else{
-        console.log("SELECT project is not found");
+        if(isPublic){
+          this.selectSharedProjectRequireMsg = "You must select a feature above";
+        }
+        else{
+          this.selectProjectRequireMsg = "You must select a feature above";
+        }
+        console.log("SELECT failed");
       }
+      selectedProject={};
+    };
 
-    }
-
-    //******************* ESRI load initial data **********************
-
-    this.getFeatureUrl(); // get available featureServices
-    this.getSharedProjects();
+    //******************* ESRI Reset Public Project Selection *********
+     this.resetSelectSharedProjectRequireMsg = (selectedProject) =>{
+       if(selectedProject){
+         this.selectSharedProjectRequireMsg = "";
+       }
+     };
 
     // ************ ESRI load Current User Projects *******************
     this.loadCurrentUserProjects = () =>{
       this.getUserProjects();
+    };
 
-    }
+   this.removeLayer = () =>{
+     console.log('angular ');
+     localStorage.removeItem("currentFeatureUrl")
+     //localStorage.setItem('', "");
+   }
+    // ************ ESRI Data initial loading ************************
+    this.getFeatureUrl(); // get available featureServices
+    this.getSharedProjects();
+
 }]); // end of EsriController
