@@ -79,7 +79,7 @@
         <select ng-change='esri.resetSelectFeatureeRequireMsg(selectedFeature)'class="form-control"id='featureServiceSelector' ng-model="selectedFeature" ng-options="feature as feature.title for feature in esri.featureServices | orderBy: 'title'">
           <option value="">---------------------Select A Feature Service------------------</option>
      </select>
-        <button ng-click='ctrl.getBasemap()' id='addLayer' class='button' name="button" > Add To Map</button>
+        <button ng-click='esri.addSelectedFeatureToMap(selectedFeature)' id='addLayer' class='button' name="button" > Add To Map</button>
         <button ng-click='esri.removeLayer()'class='button' type="button" id='removeLayer' name="removelayer"> Remove Layer</button>
         <button class='button' type="button" ng-click='esri.createProjectFromMap(selectedFeature)'> Save To  Your Projects</button>
         <span id='required' ng-show='ctrl.loginRequired'>{{esri.requiredLoginMsg}}</span>
@@ -162,7 +162,7 @@
               </div>
               <div class="col-sm-8">
                 <button type="submit" ng-disabled='ctrl.disableEditSection'class="button"   ng-click='esri.editProject()'>Save Edit</button>
-                <button type="submit" ng-disabled='ctrl.disableEditSection'class="button" ng-click='esri.deleteProject(selectedProject)'>Delete</button>
+                <button type="submit" ng-disabled='ctrl.disableEditSection'class="button" ng-click='esri.deleteProject(selectedprivateProject)'>Delete</button>
               </div>
             </div>
           </form>

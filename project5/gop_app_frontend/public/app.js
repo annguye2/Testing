@@ -489,12 +489,24 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
       this.getUserProjects();
     };
 
+    // ************ ESRI Remove current layer *******************
    this.removeLayer = () =>{
      console.log('angular ');
      localStorage.removeItem("currentFeatureUrl")
      //localStorage.setItem('', "");
    }
-    // ************ ESRI Data initial loading ************************
+
+   // ************ ESRI add Selected Feature To map *******************
+   this.addSelectedFeatureToMap = (selectedFeature) =>{
+     console.log('add feature to map: ', selectedFeature);
+     if(selectedFeature){
+
+     }else{
+       console.log("Failed to select feature");
+     }
+   }
+
+   // ************ ESRI Data initial loading ************************
     this.getFeatureUrl(); // get available featureServices
     this.getSharedProjects();
 
