@@ -206,6 +206,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
           createData.description  = "";
           this.addUserProjects(createData);
           this.selectFeatureRequireMsg ='';
+          this.loadCurrentUserProjects();
         }else {
           this.selectFeatureRequireMsg = "You must select a feature above";
         }
@@ -217,8 +218,8 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
     }
 
     //******************** ESRI resetSelectFeatureeRequireMsg L**********
-    this.resetSelectProjectRequireMsg = (selectedProject) =>{
-      if(selectedProject){
+    this.resetSelectProjectRequireMsg = (selectedprivateProject) =>{
+      if(selectedprivateProject){
         console.log('ng-change');
         this.selectProjectRequireMsg = '';
       }
@@ -345,6 +346,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
           if(result){
             this.resetEditFields();
             console.log("EDIT: success");
+            this.loadCurrentUserProjects();
           }
       });
 
@@ -500,7 +502,7 @@ app.controller('EsriController',['$http', '$scope','$rootScope',function($http,$
    this.addSelectedFeatureToMap = (selectedFeature) =>{
      console.log('add feature to map: ', selectedFeature);
      if(selectedFeature){
-
+        localStorage.setItem('currentFeatureUrl', selectedFeature.url)
      }else{
        console.log("Failed to select feature");
      }

@@ -90,12 +90,12 @@ function(
     });
 
     //************************ featureServiceSelector **********
-    $("#featureServiceSelector" ).change(() => {
-      var index = $("#featureServiceSelector")[0].selectedIndex
-      var data = JSON.parse(localStorage.getItem('featureServices'))
-      featureLayerUrl = data[index].url
-      //console.log("featureLayerUrl ",featureLayerUrl );
-    });
+    // $("#featureServiceSelector" ).change(() => {
+    //   var index = $("#featureServiceSelector")[0].selectedIndex
+    //   var data = JSON.parse(localStorage.getItem('featureServices'))
+    //   featureLayerUrl = data[index].url
+    //   //console.log("featureLayerUrl ",featureLayerUrl );
+    // });
 
     //************************ featureServiceSelector **********
     $("#loadProjectToMap").click(() => {
@@ -115,7 +115,7 @@ function(
         console.log('ADD Map');
 
       }else{ console.log('Can not add layer');}
-      localStorage.setItem('currentFeatureUrl', "");
+      //localStorage.setItem('currentFeatureUrl', "");
     });
     //************************ removeLayer *********************
     $('#removeLayer').click(() => {
@@ -124,8 +124,11 @@ function(
 
     //************************ add layer event ******************
     $("#addLayer").click(() =>{
-      console.log("url : ", featureLayerUrl);
-      addFeatureLayer(featureLayerUrl);
+      if(localStorage.getItem('currentFeatureUrl')){
+        featureLayerUrl = localStorage.getItem('currentFeatureUrl');
+        addFeatureLayer(featureLayerUrl);
+        console.log('ADD Map');
+      }
     });
 
     //******************* add FeatureLayer **********************
@@ -179,7 +182,7 @@ function(
         }
       });
     };// end of read data function
-   
+
   //********** testing ******************
 
   // ready(init(map));
